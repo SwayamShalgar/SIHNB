@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Award, CheckCircle, Users, Building2, Search, ChevronRight, Sparkles, LogOut } from 'lucide-react';
+import { Shield, Award, CheckCircle, Users, Building2, Search, ChevronRight, Sparkles, LogOut, UserCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import '../styles/LandingPage.css';
 
@@ -58,6 +58,12 @@ const LandingPage = () => {
                 {/* Show Dashboard for logged-in users */}
                 <button onClick={() => navigate(getDashboardRoute())} className="btn-secondary">
                   Dashboard
+                </button>
+                
+                {/* Profile button */}
+                <button onClick={() => navigate('/profile')} className="btn-profile-nav">
+                  <UserCircle size={18} />
+                  Profile
                 </button>
                 
                 {/* Logout button */}

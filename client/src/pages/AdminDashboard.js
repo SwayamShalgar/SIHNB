@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, LogOut, Users, FileText, BarChart, Award, Search, Eye, Trash2, Activity } from 'lucide-react';
+import { Shield, LogOut, Users, FileText, BarChart, Award, Search, Eye, Trash2, Activity, UserCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import '../styles/AdminDashboard.css';
@@ -159,6 +159,10 @@ const AdminDashboard = () => {
           </div>
           <div className="nav-actions">
             <span className="user-info">{user.email}</span>
+            <button onClick={() => navigate('/profile')} className="btn-profile">
+              <UserCircle size={20} />
+              Profile
+            </button>
             <button onClick={handleLogout} className="btn-logout">
               <LogOut size={20} />
               Logout

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, LogOut, Award, Download, Eye, CheckCircle, BookOpen, Plus, X } from 'lucide-react';
+import { Shield, LogOut, Award, Download, Eye, CheckCircle, BookOpen, Plus, X, UserCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import '../styles/StudentDashboard.css';
@@ -95,6 +95,10 @@ const StudentDashboard = () => {
           </div>
           <div className="nav-actions">
             <span className="user-info">{user.full_name || user.email}</span>
+            <button onClick={() => navigate('/profile')} className="btn-profile">
+              <UserCircle size={20} />
+              Profile
+            </button>
             <button onClick={handleLogout} className="btn-logout">
               <LogOut size={20} />
               Logout

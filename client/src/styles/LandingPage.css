@@ -227,6 +227,33 @@
   box-shadow: var(--shadow-md);
 }
 
+.btn-profile-nav {
+  padding: 0.75rem 1.75rem;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid var(--accent-blue);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  background: transparent;
+  color: var(--accent-blue);
+  white-space: nowrap;
+}
+
+.btn-profile-nav:hover {
+  background: var(--accent-blue);
+  color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px 0 rgba(37, 99, 235, 0.35);
+}
+
+.btn-profile-nav:active {
+  transform: translateY(0);
+}
+
 .btn-logout-nav {
   padding: 0.75rem 1.75rem;
   border-radius: var(--radius-lg);
@@ -961,7 +988,7 @@
     font-size: 0.9rem;
   }
   
-  .btn-primary, .btn-secondary, .btn-logout-nav {
+  .btn-primary, .btn-secondary, .btn-profile-nav, .btn-logout-nav {
     padding: 0.625rem 1.25rem;
     font-size: 0.875rem;
   }
@@ -1014,7 +1041,7 @@
     display: none; /* Hide text links on mobile */
   }
   
-  .btn-primary, .btn-secondary, .btn-logout-nav {
+  .btn-primary, .btn-secondary, .btn-profile-nav, .btn-logout-nav {
     padding: 0.5rem 1rem;
     font-size: 0.8rem;
   }
@@ -1042,7 +1069,7 @@
     gap: 0.5rem;
   }
   
-  .btn-primary, .btn-secondary, .btn-logout-nav {
+  .btn-primary, .btn-secondary, .btn-profile-nav, .btn-logout-nav {
     padding: 0.4rem 0.8rem;
     font-size: 0.75rem;
     border-radius: 0.5rem;
