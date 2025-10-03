@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, LogOut, Award, Download, Eye, CheckCircle, BookOpen } from 'lucide-react';
+import { Shield, LogOut, Award, Download, Eye, CheckCircle, BookOpen, Plus, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import '../styles/StudentDashboard.css';
@@ -9,6 +9,9 @@ const StudentDashboard = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
   const [certificates, setCertificates] = useState([]);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [certificateId, setCertificateId] = useState('');
+  const [addStatus, setAddStatus] = useState({ type: '', message: '' });
 
   useEffect(() => {
     if (!isAuthenticated() || user?.role !== 'Student') {
@@ -35,6 +38,49 @@ const StudentDashboard = () => {
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  const handleAddCertificate = async (e) => {
+    e.preventDefault();
+    setAddStatus({ type: '', message: '' });
+
+    if (!certificateId.trim()) {
+      setAddStatus({ type: 'error', message: 'Please enter a certificate ID' });
+      return;
+    }
+
+    try {
+      // Verify the certificate exists
+      const response = await axios.get(`/api/certificates/${certificateId.trim()}`);
+      
+      if (response.data) {
+        setAddStatus({ 
+          type: 'success', 
+          message: 'Certificate found! Refreshing your certificates...' 
+        });
+        
+        // Refresh the certificates list
+        await fetchMyCertificates();
+        
+        setTimeout(() => {
+          setShowAddModal(false);
+          setCertificateId('');
+          setAddStatus({ type: '', message: '' });
+        }, 2000);
+      }
+    } catch (error) {
+      if (error.response?.status === 404) {
+        setAddStatus({ 
+          type: 'error', 
+          message: 'Certificate not found. Please check the ID and try again.' 
+        });
+      } else {
+        setAddStatus({ 
+          type: 'error', 
+          message: 'Error verifying certificate. Please try again.' 
+        });
+      }
+    }
   };
 
   if (!user) return <div className="loading">Loading...</div>;
@@ -96,6 +142,10 @@ const StudentDashboard = () => {
         </div>
 
         <div className="quick-actions">
+          <button className="action-btn primary" onClick={() => setShowAddModal(true)}>
+            <Plus size={20} />
+            Add Certificate
+          </button>
           <button className="action-btn" onClick={() => navigate('/verify')}>
             <Eye size={20} />
             Verify Certificate
@@ -152,6 +202,72 @@ const StudentDashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Add Certificate Modal */}
+      {showAddModal && (
+        <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Add Certificate</h2>
+              <button 
+                className="btn-close" 
+                onClick={() => {
+                  setShowAddModal(false);
+                  setCertificateId('');
+                  setAddStatus({ type: '', message: '' });
+                }}
+              >
+                <X size={24} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleAddCertificate} className="add-certificate-form">
+              <div className="form-group">
+                <label htmlFor="certificateId">Certificate ID</label>
+                <input
+                  type="text"
+                  id="certificateId"
+                  value={certificateId}
+                  onChange={(e) => setCertificateId(e.target.value)}
+                  placeholder="Enter certificate ID (e.g., abc-123-def-456)"
+                  className="form-input"
+                />
+                <p className="form-hint">
+                  Enter the unique certificate ID provided by your institution
+                </p>
+              </div>
+
+              {addStatus.message && (
+                <div className={`status-message ${addStatus.type}`}>
+                  {addStatus.message}
+                </div>
+              )}
+
+              <div className="modal-actions">
+                <button 
+                  type="button" 
+                  className="btn-secondary"
+                  onClick={() => {
+                    setShowAddModal(false);
+                    setCertificateId('');
+                    setAddStatus({ type: '', message: '' });
+                  }}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="btn-primary"
+                  disabled={!certificateId.trim()}
+                >
+                  <Plus size={20} />
+                  Add Certificate
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

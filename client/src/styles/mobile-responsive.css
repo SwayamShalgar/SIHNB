@@ -1,0 +1,542 @@
+/* ============================================
+   GLOBAL MOBILE RESPONSIVE STYLES
+   For Certify Application
+   ============================================ */
+
+/* Base Mobile Optimizations */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent horizontal scroll on mobile */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* ============================================
+   RESPONSIVE UTILITY CLASSES
+   ============================================ */
+
+/* Hide on mobile */
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+/* Show only on mobile */
+.show-mobile {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .show-mobile {
+    display: block !important;
+  }
+}
+
+/* ============================================
+   FORM ELEMENTS - MOBILE OPTIMIZED
+   ============================================ */
+
+@media (max-width: 768px) {
+  input,
+  textarea,
+  select,
+  button {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="date"],
+  textarea {
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  /* Remove default iOS styling */
+  input[type="submit"],
+  input[type="button"],
+  button {
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 8px;
+  }
+}
+
+/* ============================================
+   BUTTONS - TOUCH FRIENDLY
+   ============================================ */
+
+@media (hover: none) and (pointer: coarse) {
+  button,
+  .btn,
+  [role="button"],
+  a[class*="btn"] {
+    min-height: 44px; /* iOS minimum tap target */
+    min-width: 44px;
+    touch-action: manipulation;
+  }
+
+  /* Active state for touch feedback */
+  button:active,
+  .btn:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+/* ============================================
+   MODALS - MOBILE OPTIMIZED
+   ============================================ */
+
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: 0;
+  }
+
+  .modal-content {
+    max-width: 100%;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 12px;
+  }
+
+  /* Full screen modal option */
+  .modal-content.fullscreen-mobile {
+    width: 100%;
+    height: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+}
+
+/* ============================================
+   TABLES - MOBILE RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  /* Card-style tables */
+  .table-responsive {
+    border: none;
+  }
+
+  .table-responsive thead {
+    display: none;
+  }
+
+  .table-responsive tbody,
+  .table-responsive tr,
+  .table-responsive td {
+    display: block;
+    width: 100%;
+  }
+
+  .table-responsive tr {
+    margin-bottom: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .table-responsive td {
+    text-align: right;
+    padding: 0.5rem;
+    position: relative;
+    border: none;
+  }
+
+  .table-responsive td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    font-weight: 600;
+    text-align: left;
+  }
+}
+
+/* ============================================
+   GRIDS - MOBILE RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .grid,
+  [class*="grid-"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+
+  .grid > *,
+  [class*="grid-"] > * {
+    width: 100% !important;
+  }
+}
+
+/* ============================================
+   NAVIGATION - MOBILE MENU
+   ============================================ */
+
+@media (max-width: 768px) {
+  .nav-links {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background: white;
+    flex-direction: column;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: none;
+  }
+
+  .nav-links.mobile-open {
+    display: flex;
+  }
+
+  .mobile-menu-toggle {
+    display: block !important;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+  }
+
+  .mobile-menu-toggle svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* ============================================
+   CARDS - MOBILE OPTIMIZED
+   ============================================ */
+
+@media (max-width: 768px) {
+  .card,
+  [class*="card"] {
+    margin: 0.5rem;
+    padding: 1rem;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+}
+
+/* ============================================
+   SPACING - MOBILE ADJUSTMENTS
+   ============================================ */
+
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  section {
+    padding: 2rem 1rem !important;
+  }
+
+  h1 {
+    font-size: 1.75rem !important;
+  }
+
+  h2 {
+    font-size: 1.5rem !important;
+  }
+
+  h3 {
+    font-size: 1.25rem !important;
+  }
+
+  h4 {
+    font-size: 1.1rem !important;
+  }
+
+  p {
+    font-size: 0.95rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.5rem !important;
+  }
+
+  h2 {
+    font-size: 1.3rem !important;
+  }
+
+  h3 {
+    font-size: 1.15rem !important;
+  }
+}
+
+/* ============================================
+   IMAGES - RESPONSIVE
+   ============================================ */
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .hero-image,
+  .featured-image {
+    max-width: 100%;
+    margin: 1rem auto;
+  }
+}
+
+/* ============================================
+   DASHBOARD MOBILE OPTIMIZATIONS
+   ============================================ */
+
+@media (max-width: 768px) {
+  .dashboard-sidebar {
+    position: fixed;
+    left: -100%;
+    top: 60px;
+    height: calc(100vh - 60px);
+    width: 250px;
+    transition: left 0.3s ease;
+    z-index: 999;
+  }
+
+  .dashboard-sidebar.open {
+    left: 0;
+  }
+
+  .dashboard-main {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  .stat-card {
+    padding: 1rem !important;
+  }
+}
+
+/* ============================================
+   CERTIFICATE DISPLAY - MOBILE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .certificate-preview {
+    padding: 1rem;
+    overflow-x: auto;
+  }
+
+  .certificate-container {
+    min-width: 100%;
+    transform: scale(0.9);
+    transform-origin: top center;
+  }
+
+  .qr-code {
+    width: 120px !important;
+    height: 120px !important;
+  }
+}
+
+/* ============================================
+   FORM LAYOUTS - MOBILE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+
+  .form-group {
+    width: 100% !important;
+  }
+
+  .form-actions {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+
+  .form-actions button {
+    width: 100% !important;
+  }
+}
+
+/* ============================================
+   ANIMATIONS - MOBILE OPTIMIZED
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY - MOBILE
+   ============================================ */
+
+/* Focus visible for keyboard navigation */
+@media (max-width: 768px) {
+  *:focus-visible {
+    outline: 3px solid #667eea;
+    outline-offset: 2px;
+  }
+
+  /* Skip to content link */
+  .skip-to-content {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: #667eea;
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 100;
+  }
+
+  .skip-to-content:focus {
+    top: 0;
+  }
+}
+
+/* ============================================
+   LOADING STATES - MOBILE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+  }
+
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+}
+
+/* ============================================
+   SAFE AREA INSETS (iOS Notch)
+   ============================================ */
+
+@supports (padding: max(0px)) {
+  .navbar,
+  .dashboard-navbar {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+
+  .modal-content {
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* ============================================
+   PRINT STYLES - MOBILE
+   ============================================ */
+
+@media print {
+  .navbar,
+  .dashboard-navbar,
+  .nav-actions,
+  .btn-logout,
+  .action-btn,
+  .mobile-menu-toggle {
+    display: none !important;
+  }
+
+  .certificate-container {
+    transform: scale(1) !important;
+    page-break-inside: avoid;
+  }
+}
+
+/* ============================================
+   DARK MODE SUPPORT (Optional)
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  /* Add dark mode styles if needed */
+  /* Uncomment if implementing dark mode */
+  /*
+  body {
+    background: #1a202c;
+    color: #e2e8f0;
+  }
+  */
+}
+
+/* ============================================
+   ORIENTATION CHANGES
+   ============================================ */
+
+@media (max-height: 600px) and (orientation: landscape) {
+  .dashboard-navbar {
+    padding: 0.5rem 1rem;
+  }
+
+  .modal-overlay {
+    align-items: flex-start;
+    overflow-y: auto;
+    padding: 1rem 0;
+  }
+
+  .hero-section {
+    min-height: auto !important;
+    padding: 1rem !important;
+  }
+}
+
+/* ============================================
+   PERFORMANCE OPTIMIZATIONS
+   ============================================ */
+
+/* GPU acceleration for smooth animations */
+@media (max-width: 768px) {
+  .modal-overlay,
+  .modal-content,
+  .card,
+  .certificate-card {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+}

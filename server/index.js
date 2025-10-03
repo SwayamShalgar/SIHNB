@@ -19,6 +19,7 @@ app.use('/certificates', express.static(path.join(__dirname, 'certificates')));
 const certificateRoutes = require('./routes/certificates');
 const verificationRoutes = require('./routes/verification');
 const authRoutes = require('./routes/auth');
+const adminRoutes = require('./routes/admin');
 
 // Initialize database
 const db = require('./database/init');
@@ -28,6 +29,7 @@ const pgPool = require('./database/postgres');
 app.use('/api/auth', authRoutes);
 app.use('/api/certificates', certificateRoutes);
 app.use('/api/verify', verificationRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Server is running' });

@@ -17,6 +17,7 @@ const testUsers = [
     organization: 'Certify Platform',
     phone: '+1234567890'
   },
+  // Institutes
   {
     email: 'institute@university.edu',
     password: 'institute123',
@@ -26,6 +27,31 @@ const testUsers = [
     phone: '+1234567891'
   },
   {
+    email: 'admin@mit.edu',
+    password: 'institute123',
+    role: 'Institute',
+    full_name: 'MIT Admin',
+    organization: 'Massachusetts Institute of Technology',
+    phone: '+1234567894'
+  },
+  {
+    email: 'admin@stanford.edu',
+    password: 'institute123',
+    role: 'Institute',
+    full_name: 'Stanford Admin',
+    organization: 'Stanford University',
+    phone: '+1234567895'
+  },
+  {
+    email: 'admin@harvard.edu',
+    password: 'institute123',
+    role: 'Institute',
+    full_name: 'Harvard Admin',
+    organization: 'Harvard University',
+    phone: '+1234567896'
+  },
+  // Students
+  {
     email: 'student@university.edu',
     password: 'student123',
     role: 'Student',
@@ -34,12 +60,101 @@ const testUsers = [
     phone: '+1234567892'
   },
   {
+    email: 'jane.smith@student.edu',
+    password: 'student123',
+    role: 'Student',
+    full_name: 'Jane Smith',
+    organization: 'MIT',
+    phone: '+1234567897'
+  },
+  {
+    email: 'michael.brown@student.edu',
+    password: 'student123',
+    role: 'Student',
+    full_name: 'Michael Brown',
+    organization: 'Stanford University',
+    phone: '+1234567898'
+  },
+  {
+    email: 'sarah.wilson@student.edu',
+    password: 'student123',
+    role: 'Student',
+    full_name: 'Sarah Wilson',
+    organization: 'Harvard University',
+    phone: '+1234567899'
+  },
+  {
+    email: 'david.lee@student.edu',
+    password: 'student123',
+    role: 'Student',
+    full_name: 'David Lee',
+    organization: 'Global University',
+    phone: '+1234567800'
+  },
+  {
+    email: 'emily.davis@student.edu',
+    password: 'student123',
+    role: 'Student',
+    full_name: 'Emily Davis',
+    organization: 'MIT',
+    phone: '+1234567801'
+  },
+  {
+    email: 'robert.johnson@student.edu',
+    password: 'student123',
+    role: 'Student',
+    full_name: 'Robert Johnson',
+    organization: 'Stanford University',
+    phone: '+1234567802'
+  },
+  {
+    email: 'lisa.anderson@student.edu',
+    password: 'student123',
+    role: 'Student',
+    full_name: 'Lisa Anderson',
+    organization: 'Harvard University',
+    phone: '+1234567803'
+  },
+  // Companies
+  {
     email: 'hr@company.com',
     password: 'company123',
     role: 'Company',
     full_name: 'HR Manager',
     organization: 'Tech Corporation',
     phone: '+1234567893'
+  },
+  {
+    email: 'hr@google.com',
+    password: 'company123',
+    role: 'Company',
+    full_name: 'Google HR',
+    organization: 'Google Inc.',
+    phone: '+1234567804'
+  },
+  {
+    email: 'hr@microsoft.com',
+    password: 'company123',
+    role: 'Company',
+    full_name: 'Microsoft HR',
+    organization: 'Microsoft Corporation',
+    phone: '+1234567805'
+  },
+  {
+    email: 'hr@amazon.com',
+    password: 'company123',
+    role: 'Company',
+    full_name: 'Amazon HR',
+    organization: 'Amazon.com Inc.',
+    phone: '+1234567806'
+  },
+  {
+    email: 'hr@apple.com',
+    password: 'company123',
+    role: 'Company',
+    full_name: 'Apple HR',
+    organization: 'Apple Inc.',
+    phone: '+1234567807'
   }
 ];
 
