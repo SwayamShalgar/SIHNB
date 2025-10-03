@@ -27,6 +27,8 @@ const adminRoutes = require('./routes/admin');
 const blockchainRoutes = require('./routes/blockchain');
 const coursesRoutes = require('./routes/courses');
 const statsRoutes = require('./routes/stats');
+const jobRoutes = require('./routes/jobs');
+const studentRoutes = require('./routes/students');
 
 // Initialize database
 const db = require('./database/init');
@@ -40,6 +42,8 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/blockchain', blockchainRoutes);
 app.use('/api/courses', coursesRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/jobs', jobRoutes);
+app.use('/api/students', studentRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Server is running' });

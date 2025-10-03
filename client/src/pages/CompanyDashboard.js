@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { Shield, LogOut, Search, Award, Eye, Users, Building, CheckCircle, UserCircle, BookOpen, Download, Filter } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import axios from 'axios';
+import CompanyJobManagement from '../components/CompanyJobManagement';
 import '../styles/CompanyDashboard.css';
 
 const CompanyDashboard = () => {
@@ -169,6 +169,13 @@ const CompanyDashboard = () => {
           >
             <Filter size={20} />
             {t('companyDashboard.browseByCourse')}
+          </button>
+          <button 
+            className={`tab-btn ${activeTab === 'jobs' ? 'active' : ''}`}
+            onClick={() => setActiveTab('jobs')}
+          >
+            <Briefcase size={20} />
+            Job Portal
           </button>
         </div>
 
@@ -355,6 +362,11 @@ const CompanyDashboard = () => {
               )}
             </div>
           </div>
+        )}
+
+        {/* Job Portal Tab */}
+        {activeTab === 'jobs' && (
+          <CompanyJobManagement />
         )}
       </div>
     </div>
