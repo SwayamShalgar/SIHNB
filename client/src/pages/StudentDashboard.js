@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, LogOut, Award, Download, Eye, CheckCircle, BookOpen, Plus, X, UserCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Shield, LogOut, Award, Download, Eye, CheckCircle, BookOpen, Plus, X, UserCircle, Briefcase, Send, EyeOff, MapPin, DollarSign, Clock, Info } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import axios from 'axios';
