@@ -12,6 +12,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import InstituteDashboard from './pages/InstituteDashboard';
 import StudentDashboard from './pages/StudentDashboard';
 import CompanyDashboard from './pages/CompanyDashboard';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/issue" element={<IssueCertificate />} />
           <Route path="/verify" element={<VerifyCertificate />} />
           <Route path="/verify/:id" element={<ViewCertificate />} />

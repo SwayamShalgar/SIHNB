@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, LogOut, Award, Users, FileText, Plus, Eye } from 'lucide-react';
+import { Shield, LogOut, Award, Users, FileText, Plus, Eye, UserCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import '../styles/InstituteDashboard.css';
@@ -45,6 +45,10 @@ const InstituteDashboard = () => {
           </div>
           <div className="nav-actions">
             <span className="user-info">{user.organization || user.email}</span>
+            <button onClick={() => navigate('/profile')} className="btn-profile">
+              <UserCircle size={20} />
+              Profile
+            </button>
             <button onClick={handleLogout} className="btn-logout">
               <LogOut size={20} />
               Logout
