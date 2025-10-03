@@ -1,0 +1,224 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Shield, ArrowLeft, Award, Calendar, Building2, User, Loader } from 'lucide-react';
+import axios from 'axios';
+import '../styles/IssueCertificate.css';
+
+const IssueCertificate = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [certificateData, setCertificateData] = useState(null);
+  const [formData, setFormData] = useState({
+    learner_name: '',
+    learner_email: '',
+    course_name: '',
+    institute_name: '',
+    issue_date: new Date().toISOString().split('T')[0]
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await axios.post('/api/certificates/issue', formData);
+      setCertificateData(response.data.certificate);
+      setSuccess(true);
+    } catch (error) {
+      console.error('Error issuing certificate:', error);
+      alert('Failed to issue certificate. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleReset = () => {
+    setSuccess(false);
+    setCertificateData(null);
+    setFormData({
+      learner_name: '',
+      learner_email: '',
+      course_name: '',
+      institute_name: '',
+      issue_date: new Date().toISOString().split('T')[0]
+    });
+  };
+
+  return (
+    <div className="issue-page">
+      <nav className="navbar">
+        <div className="nav-container">
+          <div className="nav-logo" onClick={() => navigate('/')}>
+            <Shield className="logo-icon" />
+            <span className="logo-text">Certify</span>
+          </div>
+          <button onClick={() => navigate('/')} className="btn-back">
+            <ArrowLeft size={20} />
+            Back to Home
+          </button>
+        </div>
+      </nav>
+
+      <div className="issue-container">
+        {!success ? (
+          <div className="form-section">
+            <div className="form-header">
+              <div className="header-icon">
+                <Award />
+              </div>
+              <h1>Issue New Certificate</h1>
+              <p>Enter the details below to create a blockchain-verified certificate</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="certificate-form">
+              <div className="form-group">
+                <label>
+                  <User size={18} />
+                  Learner Name *
+                </label>
+                <input
+                  type="text"
+                  name="learner_name"
+                  value={formData.learner_name}
+                  onChange={handleChange}
+                  placeholder="Enter learner's full name"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>
+                  <User size={18} />
+                  Learner Email
+                </label>
+                <input
+                  type="email"
+                  name="learner_email"
+                  value={formData.learner_email}
+                  onChange={handleChange}
+                  placeholder="learner@example.com (optional)"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>
+                  <Award size={18} />
+                  Course Name *
+                </label>
+                <input
+                  type="text"
+                  name="course_name"
+                  value={formData.course_name}
+                  onChange={handleChange}
+                  placeholder="Enter course name"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>
+                  <Building2 size={18} />
+                  Institute Name *
+                </label>
+                <input
+                  type="text"
+                  name="institute_name"
+                  value={formData.institute_name}
+                  onChange={handleChange}
+                  placeholder="Enter institute name"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>
+                  <Calendar size={18} />
+                  Issue Date *
+                </label>
+                <input
+                  type="date"
+                  name="issue_date"
+                  value={formData.issue_date}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <button type="submit" className="btn-submit" disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader className="spinner" size={20} />
+                    Issuing Certificate...
+                  </>
+                ) : (
+                  <>
+                    <Award size={20} />
+                    Issue Certificate
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+        ) : (
+          <div className="success-section">
+            <div className="success-icon">✓</div>
+            <h1>Certificate Issued Successfully!</h1>
+            <p>The certificate has been generated and stored on the blockchain</p>
+
+            <div className="certificate-details">
+              <div className="detail-row">
+                <span className="detail-label">Certificate ID:</span>
+                <span className="detail-value">{certificateData.id}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Transaction Hash:</span>
+                <span className="detail-value hash">{certificateData.txHash}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Certificate Hash:</span>
+                <span className="detail-value hash">{certificateData.hash}</span>
+              </div>
+            </div>
+
+            <div className="qr-section">
+              <h3>QR Code for Verification</h3>
+              <img src={certificateData.qrCode} alt="QR Code" className="qr-code" />
+              <p className="qr-info">Scan this QR code to verify the certificate</p>
+            </div>
+
+            <div className="action-buttons">
+              <a 
+                href={certificateData.pdfUrl}
+                download
+                className="btn-download"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Download PDF
+              </a>
+              <button 
+                onClick={() => navigate(`/certificate/${certificateData.id}`)}
+                className="btn-view"
+              >
+                View Certificate
+              </button>
+              <button onClick={handleReset} className="btn-issue-another">
+                Issue Another
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default IssueCertificate;
