@@ -192,12 +192,6 @@ const ViewCertificate = () => {
 
           <div className="sidebar-card blockchain-card">
             <h3>Blockchain Details</h3>
-            <div className="blockchain-detail">
-              <span className="bc-label">Certificate Hash</span>
-              <code className="bc-value" title={certificate.txHash || 'Not available'}>
-                {truncateHash(certificate.txHash)}
-              </code>
-            </div>
             <div className="verified-stamp">
               <CheckCircle size={24} />
               <span>Verified on Ethereum</span>
