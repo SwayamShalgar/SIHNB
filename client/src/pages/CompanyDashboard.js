@@ -148,7 +148,7 @@ const CompanyDashboard = () => {
             <div className="info-card">
               <Shield size={32} />
               <h3>Blockchain Security</h3>
-              <p>All certificates are verified on the Polygon blockchain ensuring tamper-proof records</p>
+              <p>All certificates are verified on the Ethereum blockchain ensuring tamper-proof records</p>
             </div>
 
             <div className="info-card">

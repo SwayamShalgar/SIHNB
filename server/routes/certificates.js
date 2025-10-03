@@ -70,7 +70,7 @@ router.post('/issue', async (req, res) => {
         console.error(`❌ Blockchain storage failed for ${certificateId}:`, error.message);
       });
 
-    // Upload to IPFS (Pinata)
+    // Upload to IPFS (Pinata) - PDF only
     let ipfsResult;
     try {
       console.log('📤 Starting IPFS upload to Pinata...');
@@ -87,27 +87,7 @@ router.post('/issue', async (req, res) => {
 
       console.log(`✅ PDF uploaded to IPFS! Hash: ${ipfsResult.IpfsHash}`);
       console.log(`🔗 IPFS URL: ${ipfsResult.ipfsUrl}`);
-
-      // Also upload metadata as JSON
-      console.log('📤 Uploading metadata JSON to Pinata...');
-      const metadataJson = {
-        certificateId,
-        learnerName: learner_name,
-        courseName: course_name,
-        instituteName: institute_name,
-        issueDate: issue_date,
-        certificateHash,
-        blockchainTxHash: blockchainResult.txHash,
-        pdfIpfsHash: ipfsResult.IpfsHash,
-        createdAt: new Date().toISOString()
-      };
-
-      const jsonResult = await pinataService.uploadJSON(metadataJson, {
-        name: `certificate-metadata-${certificateId}.json`,
-        certificateId: certificateId
-      });
-
-      console.log(`✅ Metadata JSON uploaded! Hash: ${jsonResult.IpfsHash}`);
+      console.log(`🌐 Public IPFS URL: ${ipfsResult.publicUrl}`);
 
     } catch (error) {
       console.error('❌ IPFS upload failed:', error);

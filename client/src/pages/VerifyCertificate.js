@@ -10,6 +10,17 @@ const VerifyCertificate = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
 
+  // Helper function to truncate hash for display
+  const truncateHash = (hash) => {
+    if (!hash || hash === 'pending' || hash === 'null') {
+      return 'N/A';
+    }
+    if (hash.length <= 15) {
+      return hash;
+    }
+    return `${hash.substring(0, 6)}...${hash.substring(hash.length - 4)}`;
+  };
+
   const handleVerify = async (e) => {
     e.preventDefault();
     if (!certificateId.trim()) return;
@@ -129,8 +140,10 @@ const VerifyCertificate = () => {
                       <span>Verified on Blockchain</span>
                     </div>
                     <div className="hash-display">
-                      <span className="hash-label">Transaction Hash:</span>
-                      <code className="hash-value">{result.certificate.txHash}</code>
+                      <span className="hash-label">Certificate Hash:</span>
+                      <code className="hash-value" title={result.certificate.txHash || 'Not available'}>
+                        {truncateHash(result.certificate.txHash)}
+                      </code>
                     </div>
                   </div>
 
@@ -177,7 +190,7 @@ const VerifyCertificate = () => {
             <Shield size={24} />
             <div>
               <h4>100% Secure</h4>
-              <p>All certificates are cryptographically secured and stored on the Polygon blockchain</p>
+              <p>All certificates are cryptographically secured and stored on the Ethereum blockchain</p>
             </div>
           </div>
         </div>

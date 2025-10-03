@@ -145,9 +145,37 @@
   transform: translateY(-5px);
 }
 
+.action-card.secondary {
+  border-color: #ed8936;
+}
+
+.action-card.secondary:hover {
+  background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+  color: white;
+  transform: translateY(-5px);
+}
+
+.action-card.tertiary {
+  border-color: #4299e1;
+}
+
+.action-card.tertiary:hover {
+  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+  color: white;
+  transform: translateY(-5px);
+}
+
 .action-card svg {
   color: #667eea;
   margin-bottom: 1rem;
+}
+
+.action-card.secondary svg {
+  color: #ed8936;
+}
+
+.action-card.tertiary svg {
+  color: #4299e1;
 }
 
 .action-card:hover svg {

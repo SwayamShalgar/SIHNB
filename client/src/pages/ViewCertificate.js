@@ -16,6 +16,17 @@ const ViewCertificate = () => {
     fetchCertificate();
   }, [id]);
 
+  // Helper function to truncate hash for display
+  const truncateHash = (hash) => {
+    if (!hash || hash === 'pending' || hash === 'null') {
+      return 'N/A';
+    }
+    if (hash.length <= 15) {
+      return hash;
+    }
+    return `${hash.substring(0, 6)}...${hash.substring(hash.length - 4)}`;
+  };
+
   const fetchCertificate = async () => {
     try {
       const response = await axios.get(`/api/certificates/${id}`);
@@ -182,16 +193,14 @@ const ViewCertificate = () => {
           <div className="sidebar-card blockchain-card">
             <h3>Blockchain Details</h3>
             <div className="blockchain-detail">
-              <span className="bc-label">Transaction Hash</span>
-              <code className="bc-value">{certificate.txHash}</code>
-            </div>
-            <div className="blockchain-detail">
               <span className="bc-label">Certificate Hash</span>
-              <code className="bc-value">{certificate.hash}</code>
+              <code className="bc-value" title={certificate.txHash || 'Not available'}>
+                {truncateHash(certificate.txHash)}
+              </code>
             </div>
             <div className="verified-stamp">
               <CheckCircle size={24} />
-              <span>Verified on Polygon</span>
+              <span>Verified on Ethereum</span>
             </div>
           </div>
 

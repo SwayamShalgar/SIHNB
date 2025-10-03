@@ -99,11 +99,11 @@ router.post('/', async (req, res) => {
       learning_outcomes
     } = req.body;
 
-    // Validation
-    if (!institute_id || !course_code || !course_name) {
+    // Validation - only course_name and institute_id are required
+    if (!institute_id || !course_name) {
       return res.status(400).json({
         error: 'Missing required fields',
-        required: ['institute_id', 'course_code', 'course_name']
+        required: ['institute_id', 'course_name']
       });
     }
 

@@ -1,10 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, ArrowLeft, Award, Calendar, User, Loader, Search, BookOpen, X } from 'lucide-react';
+import { Shield, ArrowLeft, Award, Calendar, User, Loader, BookOpen } from 'lucide-react';
 import axios from 'axios';
 import { validateCertificateForm, sanitizeInput } from '../utils/validation';
 import { useAuth } from '../context/AuthContext';
 import '../styles/IssueCertificate.css';
+
+// Predefined famous tech courses
+const PREDEFINED_COURSES = [
+  'Full Stack Web Development',
+  'Data Science & Machine Learning',
+  'Artificial Intelligence',
+  'Cloud Computing (AWS/Azure/GCP)',
+  'Cybersecurity Fundamentals',
+  'Mobile App Development (iOS/Android)',
+  'DevOps Engineering',
+  'Blockchain Development',
+  'Python Programming',
+  'JavaScript & React.js',
+  'Java Programming',
+  'C++ Programming',
+  'Database Management (SQL/NoSQL)',
+  'UI/UX Design',
+  'Digital Marketing',
+  'Business Analytics',
+  'Project Management (PMP/Agile)',
+  'Other (Specify Below)'
+];
 
 const IssueCertificate = () => {
   const navigate = useNavigate();
@@ -13,11 +35,8 @@ const IssueCertificate = () => {
   const [success, setSuccess] = useState(false);
   const [certificateData, setCertificateData] = useState(null);
   const [errors, setErrors] = useState({});
-  const [courses, setCourses] = useState([]);
-  const [filteredCourses, setFilteredCourses] = useState([]);
-  const [courseSearch, setCourseSearch] = useState('');
-  const [showCourseDropdown, setShowCourseDropdown] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [selectedCourseOption, setSelectedCourseOption] = useState('');
+  const [showOtherInput, setShowOtherInput] = useState(false);
   const [formData, setFormData] = useState({
     learner_name: '',
     learner_email: '',
@@ -26,9 +45,16 @@ const IssueCertificate = () => {
     issue_date: new Date().toISOString().split('T')[0]
   });
 
-  useEffect(() => {
-    fetchCourses();
-  }, [user]);
+  // Helper function to truncate hash for display
+  const truncateHash = (hash) => {
+    if (!hash || hash === 'pending' || hash === 'null') {
+      return 'N/A';
+    }
+    if (hash.length <= 15) {
+      return hash;
+    }
+    return `${hash.substring(0, 6)}...${hash.substring(hash.length - 4)}`;
+  };
 
   useEffect(() => {
     // Set institute name when user data loads
@@ -40,72 +66,48 @@ const IssueCertificate = () => {
     }
   }, [user]);
 
-  useEffect(() => {
-    // Filter courses based on search
-    if (courseSearch.trim() === '') {
-      setFilteredCourses(courses);
+  const handleCourseSelectChange = (e) => {
+    const selectedValue = e.target.value;
+    setSelectedCourseOption(selectedValue);
+    
+    if (selectedValue === 'Other (Specify Below)') {
+      setShowOtherInput(true);
+      setFormData({
+        ...formData,
+        course_name: ''
+      });
     } else {
-      const searchLower = courseSearch.toLowerCase();
-      const filtered = courses.filter(course =>
-        course.course_name.toLowerCase().includes(searchLower) ||
-        course.course_code.toLowerCase().includes(searchLower) ||
-        (course.category && course.category.toLowerCase().includes(searchLower))
-      );
-      setFilteredCourses(filtered);
-    }
-  }, [courseSearch, courses]);
-
-  useEffect(() => {
-    // Close dropdown when clicking outside
-    const handleClickOutside = (event) => {
-      if (!event.target.closest('.course-search-wrapper')) {
-        setShowCourseDropdown(false);
+      setShowOtherInput(false);
+      setFormData({
+        ...formData,
+        course_name: selectedValue
+      });
+      // Clear course name error if exists
+      if (errors.course_name) {
+        setErrors({
+          ...errors,
+          course_name: ''
+        });
       }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  const fetchCourses = async () => {
-    try {
-      if (!user?.id) return;
-      
-      const response = await axios.get(`/api/courses/institute/${user.id}`);
-      setCourses(response.data.courses || []);
-      setFilteredCourses(response.data.courses || []);
-    } catch (error) {
-      console.error('Error fetching courses:', error);
     }
   };
 
-  const handleCourseSelect = (course) => {
-    setSelectedCourse(course);
-    setCourseSearch(`${course.course_code} - ${course.course_name}`);
+  const handleOtherCourseChange = (e) => {
+    const { value } = e.target;
+    const sanitizedValue = sanitizeInput(value);
+    
     setFormData({
       ...formData,
-      course_name: course.course_name
+      course_name: sanitizedValue
     });
-    setShowCourseDropdown(false);
     
-    // Clear course name error if exists
+    // Clear course name error
     if (errors.course_name) {
       setErrors({
         ...errors,
         course_name: ''
       });
     }
-  };
-
-  const clearCourseSelection = () => {
-    setSelectedCourse(null);
-    setCourseSearch('');
-    setFormData({
-      ...formData,
-      course_name: ''
-    });
   };
 
   const handleSubmit = async (e) => {
@@ -155,8 +157,8 @@ const IssueCertificate = () => {
     setSuccess(false);
     setCertificateData(null);
     setErrors({});
-    setSelectedCourse(null);
-    setCourseSearch('');
+    setSelectedCourseOption('');
+    setShowOtherInput(false);
     setFormData({
       learner_name: '',
       learner_email: '',
@@ -227,87 +229,44 @@ const IssueCertificate = () => {
                 {errors.learner_email && <span className="field-error">{errors.learner_email}</span>}
               </div>
 
-              <div className="form-group course-select-group">
+              <div className="form-group">
                 <label>
                   <BookOpen size={18} />
                   Select Course *
                 </label>
-                <div className="course-search-wrapper">
-                  <div className="search-input-wrapper">
-                    <Search size={18} className="search-icon" />
-                    <input
-                      type="text"
-                      value={courseSearch}
-                      onChange={(e) => {
-                        setCourseSearch(e.target.value);
-                        setShowCourseDropdown(true);
-                      }}
-                      onFocus={() => setShowCourseDropdown(true)}
-                      placeholder="Search courses by name or code..."
-                      className={errors.course_name ? 'input-error' : ''}
-                    />
-                    {selectedCourse && (
-                      <button
-                        type="button"
-                        className="clear-course-btn"
-                        onClick={clearCourseSelection}
-                        title="Clear selection"
-                      >
-                        <X size={18} />
-                      </button>
-                    )}
-                  </div>
-
-                  {showCourseDropdown && filteredCourses.length > 0 && (
-                    <div className="course-dropdown">
-                      {filteredCourses.map((course) => (
-                        <div
-                          key={course.id}
-                          className="course-option"
-                          onClick={() => handleCourseSelect(course)}
-                        >
-                          <div className="course-option-header">
-                            <span className="course-code-badge">{course.course_code}</span>
-                            <span className="course-name">{course.course_name}</span>
-                          </div>
-                          <div className="course-option-meta">
-                            {course.category && (
-                              <span className="course-category">
-                                <Award size={12} />
-                                {course.category}
-                              </span>
-                            )}
-                            {course.level && (
-                              <span className="course-level">{course.level}</span>
-                            )}
-                            {course.duration && (
-                              <span className="course-duration">
-                                {course.duration} {course.duration_unit}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {showCourseDropdown && courseSearch && filteredCourses.length === 0 && (
-                    <div className="course-dropdown">
-                      <div className="no-courses-found">
-                        <BookOpen size={24} />
-                        <p>No courses found</p>
-                        <small>Try a different search term</small>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <select
+                  value={selectedCourseOption}
+                  onChange={handleCourseSelectChange}
+                  required
+                  className={errors.course_name ? 'input-error' : ''}
+                >
+                  <option value="">-- Choose a Course --</option>
+                  {PREDEFINED_COURSES.map((course, index) => (
+                    <option key={index} value={course}>
+                      {course}
+                    </option>
+                  ))}
+                </select>
                 {errors.course_name && <span className="field-error">{errors.course_name}</span>}
-                {courses.length === 0 && (
-                  <small className="field-hint warning">
-                    No courses available. Please add courses in your profile first.
-                  </small>
-                )}
               </div>
+
+              {showOtherInput && (
+                <div className="form-group other-course-input">
+                  <label>
+                    <BookOpen size={18} />
+                    Enter Course Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.course_name}
+                    onChange={handleOtherCourseChange}
+                    placeholder="Enter the course name..."
+                    required
+                    className={errors.course_name ? 'input-error' : ''}
+                  />
+                  <small className="field-hint">Please specify the course name</small>
+                </div>
+              )}
 
               <div className="form-group">
                 <label>
@@ -353,12 +312,10 @@ const IssueCertificate = () => {
                 <span className="detail-value">{certificateData.id}</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">Transaction Hash:</span>
-                <span className="detail-value hash">{certificateData.txHash}</span>
-              </div>
-              <div className="detail-row">
                 <span className="detail-label">Certificate Hash:</span>
-                <span className="detail-value hash">{certificateData.hash}</span>
+                <span className="detail-value hash" title={certificateData.txHash || 'Not available'}>
+                  {truncateHash(certificateData.txHash)}
+                </span>
               </div>
             </div>
 

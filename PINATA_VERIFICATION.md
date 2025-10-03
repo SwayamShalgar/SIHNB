@@ -9,7 +9,9 @@ Your PDF files **ARE** being uploaded to Pinata successfully and are publicly ac
 ## 🎯 Test Results (Just Completed)
 
 ### ✅ Uploaded Files:
+
 1. **Test Certificate PDF**
+
    - **IPFS Hash**: `bafkreicvkcfydbz2tg3abw67x3w55mok4o2ynmero2ch6eiltpzlz7uuhe`
    - **File Size**: 5.59 KB
    - **Status**: ✅ Uploaded and Accessible
@@ -38,11 +40,13 @@ Your PDF files **ARE** being uploaded to Pinata successfully and are publicly ac
 ### Method 2: API Access
 
 Your files are accessible programmatically and were just verified:
+
 ```bash
 ✅ Found 2 total pinned files on Pinata
 ```
 
 Files found:
+
 - `test-certificate-4d7659b5-019b-4025-9867-f402a684d301.pdf`
 - `test-certificate-metadata-4d7659b5-019b-4025-9867-f402a684d301.json`
 
@@ -53,15 +57,18 @@ Files found:
 ### Possible Reasons:
 
 1. **No Certificates Created Yet**
+
    - Files only upload when Institute users create certificates
    - Our test just created the first files
 
 2. **Different Account**
+
    - Make sure you're logged into Pinata with the account associated with:
      - API Key: `ea8689798bf50cc1cec0`
      - Email: `surajbayas@orchideng.ac.in`
 
 3. **Dashboard View Filters**
+
    - Check if any filters are applied in the Pinata dashboard
    - Make sure you're viewing "All Files" or "Pinned Files"
 
@@ -76,12 +83,14 @@ Files found:
 ### ✅ Files ARE Working! Here's proof:
 
 1. **Upload Test**: ✅ PASSED
+
    ```
    ✅ File uploaded to IPFS: bafkreicvkcfydbz2tg3abw67x3w55mok4o2ynmero2ch6eiltpzlz7uuhe
    ✅ JSON uploaded to IPFS: bafkreig5h5p3as3sijxghg55jbz2j6orzcpvi2bzavxifqnabnjvggbiy4
    ```
 
 2. **API List Test**: ✅ PASSED
+
    ```
    ✅ Found 2 total pinned files on Pinata
    ```
@@ -96,9 +105,11 @@ Files found:
 ## 🔗 Access Your Test Files Right Now
 
 ### PDF Certificate:
+
 Click or copy these URLs to view the uploaded PDF:
 
 1. **Pinata Gateway** (Fastest):
+
    ```
    https://gateway.pinata.cloud/ipfs/bafkreicvkcfydbz2tg3abw67x3w55mok4o2ynmero2ch6eiltpzlz7uuhe
    ```
@@ -109,6 +120,7 @@ Click or copy these URLs to view the uploaded PDF:
    ```
 
 ### Metadata JSON:
+
 ```
 https://gateway.pinata.cloud/ipfs/bafkreig5h5p3as3sijxghg55jbz2j6orzcpvi2bzavxifqnabnjvggbiy4
 ```
@@ -141,10 +153,12 @@ Status: Active ✅
 2. **Login** with your credentials
 
 3. **Look for**:
+
    - Left sidebar: "Pin Manager" or "Files"
    - Main content area should show a table with files
 
 4. **You should see**:
+
    ```
    📄 test-certificate-4d7659b5-019b-4025-9867-f402a684d301.pdf
    📄 test-certificate-metadata-4d7659b5-019b-4025-9867-f402a684d301.json
@@ -175,6 +189,7 @@ Status: Active ✅
 ### To Monitor Uploads:
 
 Run this command to see all files on Pinata:
+
 ```bash
 cd server
 node -e "require('dotenv').config(); require('./utils/pinataService').getPinnedFiles({pageLimit: 100}).then(r => console.log(JSON.stringify(r, null, 2)))"
@@ -187,21 +202,25 @@ node -e "require('dotenv').config(); require('./utils/pinataService').getPinnedF
 ### If you still can't see files in dashboard:
 
 1. **Check Login Account**
+
    ```
    Make sure you're logged into: surajbayas@orchideng.ac.in
    ```
 
 2. **Verify API Key Ownership**
+
    - In Pinata dashboard, go to "API Keys"
    - Check if key `ea8689798bf50cc1cec0` exists
    - This confirms you're in the right account
 
 3. **Check Filters**
+
    - Click "All Files" tab
    - Clear any search filters
    - Sort by "Date Pinned" (newest first)
 
 4. **Browser Issues**
+
    - Try incognito/private window
    - Clear browser cache
    - Try different browser
@@ -226,6 +245,7 @@ node -e "require('dotenv').config(); require('./utils/pinataService').getPinnedF
 **The test files are live and accessible right now!**
 
 You can verify by visiting:
+
 - Pinata Dashboard: https://app.pinata.cloud/pinmanager
 - Direct PDF Link: https://gateway.pinata.cloud/ipfs/bafkreicvkcfydbz2tg3abw67x3w55mok4o2ynmero2ch6eiltpzlz7uuhe
 

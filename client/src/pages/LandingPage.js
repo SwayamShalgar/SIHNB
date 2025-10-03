@@ -1,12 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shield, Award, CheckCircle, Users, Building2, Search, ChevronRight, Sparkles, LogOut, UserCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import axios from 'axios';
 import '../styles/LandingPage.css';
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      const response = await axios.get('/api/stats');
+      if (response.data.success) {
+        setStats(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+      // Use fallback default values
+      setStats({
+        heroStats: {
+          certificates: '0',
+          institutes: '0',
+          verified: '100%'
+        }
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -116,18 +144,24 @@ const LandingPage = () => {
             </div>
             <div className="hero-stats">
               <div className="stat-item">
-                <span className="stat-number">100%</span>
-                <span className="stat-label">Secure</span>
+                <span className="stat-number">
+                  {loading ? '...' : stats?.heroStats?.certificates || '0'}
+                </span>
+                <span className="stat-label">Certificates</span>
               </div>
               <div className="stat-divider"></div>
               <div className="stat-item">
-                <span className="stat-number">Instant</span>
-                <span className="stat-label">Verification</span>
+                <span className="stat-number">
+                  {loading ? '...' : stats?.heroStats?.institutes || '0'}
+                </span>
+                <span className="stat-label">Institutes</span>
               </div>
               <div className="stat-divider"></div>
               <div className="stat-item">
-                <span className="stat-number">Forever</span>
-                <span className="stat-label">On Blockchain</span>
+                <span className="stat-number">
+                  {loading ? '...' : stats?.heroStats?.verified || '100%'}
+                </span>
+                <span className="stat-label">Verified</span>
               </div>
             </div>
           </div>
@@ -216,7 +250,7 @@ const LandingPage = () => {
                 <Shield />
               </div>
               <h3>Blockchain Storage</h3>
-              <p>Certificate hash is permanently stored on Polygon blockchain. This ensures the certificate can never be tampered with.</p>
+              <p>Certificate hash is permanently stored on Ethereum blockchain. This ensures the certificate can never be tampered with.</p>
             </div>
             <div className="step-connector"></div>
             <div className="step">

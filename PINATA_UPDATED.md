@@ -9,12 +9,14 @@ Your Pinata IPFS integration is now fully configured and operational!
 ## 📋 Configuration Summary
 
 ### Credentials (Updated: October 3, 2025)
+
 - **API Key**: `ea8689798bf50cc1cec0` ✅
 - **API Secret**: `5aa075ab625aa7246b96e22a9a7f05061c5d6a81d06afb6ffec619b27a68e483` ✅
 - **JWT Token**: Configured ✅
 - **Gateway**: `https://gateway.pinata.cloud` ✅
 
 ### Test Results
+
 ```
 ✅ Authentication successful
 ✅ API connection verified
@@ -28,16 +30,19 @@ Your Pinata IPFS integration is now fully configured and operational!
 When an Institute issues a certificate, the system automatically:
 
 1. **Generates PDF Certificate**
+
    - Creates certificate with learner details
    - Generates QR code for verification
    - Saves locally in `server/certificates/` folder
 
 2. **Uploads to Pinata IPFS** (Automatic)
+
    - Uploads the PDF file to IPFS
    - Uploads metadata JSON with certificate details
    - Returns IPFS hash and public URL
 
 3. **Stores in Database**
+
    - Saves certificate details
    - Stores IPFS hash for retrieval
    - Stores public IPFS URL
@@ -51,6 +56,7 @@ When an Institute issues a certificate, the system automatically:
 ## 📁 What Gets Uploaded to Pinata
 
 ### 1. Certificate PDF
+
 - **Filename**: `certificate-{UUID}.pdf`
 - **Metadata Tags**:
   - Certificate ID
@@ -60,6 +66,7 @@ When an Institute issues a certificate, the system automatically:
   - Upload Date
 
 ### 2. Certificate Metadata JSON
+
 - **Filename**: `certificate-metadata-{UUID}.json`
 - **Contains**:
   ```json
@@ -99,19 +106,20 @@ const ipfsResult = await pinataService.uploadFile(pdfPath, {
   certificateId: certificateId,
   learnerName: learner_name,
   courseName: course_name,
-  issueDate: issue_date
+  issueDate: issue_date,
 });
 
 // Upload metadata JSON
 await pinataService.uploadJSON(metadataJson, {
   name: `certificate-metadata-${certificateId}.json`,
-  certificateId: certificateId
+  certificateId: certificateId,
 });
 ```
 
 ### Pinata Service (server/utils/pinataService.js)
 
 The service handles:
+
 - ✅ File uploads (PDF)
 - ✅ JSON uploads (Metadata)
 - ✅ Authentication
@@ -123,12 +131,14 @@ The service handles:
 ## 🧪 Testing
 
 ### Test Pinata Connection
+
 ```bash
 cd server
 node test-pinata-connection.js
 ```
 
 ### Expected Output
+
 ```
 ✅ Pinata authentication successful
 ✅ Pinata is properly configured and ready to use!
@@ -150,6 +160,7 @@ node test-pinata-connection.js
 4. **Submit**
 
 **What Happens Automatically:**
+
 - ✅ Certificate PDF generated
 - ✅ PDF uploaded to Pinata IPFS
 - ✅ Metadata uploaded to Pinata IPFS
@@ -161,6 +172,7 @@ node test-pinata-connection.js
 ## 📊 Database Storage
 
 Certificates are stored in PostgreSQL with:
+
 - `ipfs_hash`: The IPFS content hash
 - `ipfs_url`: Direct public URL to access the certificate
 - `pdf_path`: Local backup path
@@ -182,18 +194,21 @@ Certificates are stored in PostgreSQL with:
 ## 🎯 Benefits
 
 ### For Institutes
+
 - ✅ Permanent certificate storage
 - ✅ No risk of data loss
 - ✅ Global accessibility
 - ✅ Instant verification
 
 ### For Students
+
 - ✅ Lifetime certificate access
 - ✅ Shareable IPFS links
 - ✅ QR code for quick verification
 - ✅ Download anytime, anywhere
 
 ### For Companies
+
 - ✅ Instant certificate verification
 - ✅ Tamper-proof validation
 - ✅ No need to contact institute
@@ -204,19 +219,25 @@ Certificates are stored in PostgreSQL with:
 ## 📞 Troubleshooting
 
 ### Issue: Upload fails
-**Solution**: 
+
+**Solution**:
+
 - Check API credentials in `.env` file
 - Run `node test-pinata-connection.js`
 - Verify internet connection
 
 ### Issue: Slow uploads
+
 **Solution**:
+
 - Large PDF files may take longer
 - Check network speed
 - Pinata gateway may be busy
 
 ### Issue: IPFS URL not accessible
+
 **Solution**:
+
 - IPFS propagation can take a few seconds
 - Try accessing after 1-2 minutes
 - Check if IPFS hash is correct
@@ -226,6 +247,7 @@ Certificates are stored in PostgreSQL with:
 ## 🔧 Configuration Files
 
 ### Environment Variables (.env)
+
 ```bash
 PINATA_API_KEY=ea8689798bf50cc1cec0
 PINATA_API_SECRET=5aa075ab625aa7246b96e22a9a7f05061c5d6a81d06afb6ffec619b27a68e483
