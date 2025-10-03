@@ -45,6 +45,7 @@
 ## 🚀 Key Features
 
 ### For Educational Institutions
+
 - ✅ Issue blockchain-verified certificates with custom templates
 - ✅ Bulk certificate generation support
 - ✅ Institute-specific dashboard with analytics
@@ -52,6 +53,7 @@
 - ✅ IPFS storage integration for permanent archival
 
 ### For Students
+
 - ✅ Personal dashboard to view all earned certificates
 - ✅ Download certificates as PDF
 - ✅ Share certificates via unique verification links
@@ -59,12 +61,14 @@
 - ✅ Certificate authenticity guaranteed by blockchain
 
 ### For Companies
+
 - ✅ Verify candidate certificates instantly
 - ✅ Bulk verification support
 - ✅ Access to certificate metadata and issuer information
 - ✅ Integration-ready verification API
 
 ### For Administrators
+
 - ✅ Platform-wide analytics and monitoring
 - ✅ User management (institutes, students, companies)
 - ✅ Blockchain transaction monitoring
@@ -73,35 +77,38 @@
 ## 🛠️ Tech Stack
 
 ### Frontend
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| React | 18.2.0 | UI framework |
-| React Router | 6.20.0 | Client-side routing |
-| Axios | 1.6.2 | HTTP client |
-| Lucide React | 0.294.0 | Icon library |
-| QRCode.React | 3.1.0 | QR code generation |
-| Custom CSS | - | Professional design system |
+
+| Technology   | Version | Purpose                    |
+| ------------ | ------- | -------------------------- |
+| React        | 18.2.0  | UI framework               |
+| React Router | 6.20.0  | Client-side routing        |
+| Axios        | 1.6.2   | HTTP client                |
+| Lucide React | 0.294.0 | Icon library               |
+| QRCode.React | 3.1.0   | QR code generation         |
+| Custom CSS   | -       | Professional design system |
 
 ### Backend
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| Node.js | 18+ | Runtime environment |
-| Express | 4.18.2 | Web framework |
-| SQLite3 | 5.1.6 | Local database |
-| PostgreSQL | 8.16.3 | Production database option |
-| JWT | 9.0.2 | Authentication |
-| Bcrypt.js | 3.0.2 | Password hashing |
-| PDFKit | 0.13.0 | PDF generation |
-| Multer | 1.4.5 | File uploads |
+
+| Technology | Version | Purpose                    |
+| ---------- | ------- | -------------------------- |
+| Node.js    | 18+     | Runtime environment        |
+| Express    | 4.18.2  | Web framework              |
+| SQLite3    | 5.1.6   | Local database             |
+| PostgreSQL | 8.16.3  | Production database option |
+| JWT        | 9.0.2   | Authentication             |
+| Bcrypt.js  | 3.0.2   | Password hashing           |
+| PDFKit     | 0.13.0  | PDF generation             |
+| Multer     | 1.4.5   | File uploads               |
 
 ### Blockchain & Storage
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| Hardhat | Latest | Smart contract development |
-| Ethers.js | 6.9.0 | Blockchain interaction |
-| Solidity | 0.8.19 | Smart contract language |
-| Polygon Mumbai | Testnet | Blockchain network |
-| IPFS/Pinata | - | Decentralized storage |
+
+| Technology     | Version | Purpose                    |
+| -------------- | ------- | -------------------------- |
+| Hardhat        | Latest  | Smart contract development |
+| Ethers.js      | 6.9.0   | Blockchain interaction     |
+| Solidity       | 0.8.19  | Smart contract language    |
+| Polygon Mumbai | Testnet | Blockchain network         |
+| IPFS/Pinata    | -       | Decentralized storage      |
 
 ## 🏗️ Architecture
 
@@ -152,6 +159,7 @@ Before you begin, ensure you have the following installed:
 - **Pinata Account** (for IPFS storage) - [Sign Up](https://pinata.cloud/)
 
 ### Optional (for production)
+
 - **PostgreSQL** (v14+) - For production database
 - **Polygon RPC URL** - From [Alchemy](https://www.alchemy.com/) or [Infura](https://infura.io/)
 
@@ -167,6 +175,7 @@ cd SIHNB
 ### 2. Install All Dependencies
 
 Quick install (recommended):
+
 ```bash
 npm run install-all
 ```
@@ -263,6 +272,7 @@ npm run seed
 ```
 
 This creates default users:
+
 - Admin: `admin@certify.com` / `admin123`
 - Institute: `institute@example.com` / `institute123`
 - Student: `student@example.com` / `student123`
@@ -280,6 +290,7 @@ npm run dev
 ```
 
 This starts:
+
 - **Backend**: http://localhost:5001
 - **Frontend**: http://localhost:3000
 
@@ -299,6 +310,7 @@ npm start
 ### Run Separately
 
 **Backend only:**
+
 ```bash
 npm run server
 # or
@@ -306,6 +318,7 @@ cd server && npm start
 ```
 
 **Frontend only:**
+
 ```bash
 npm run client
 # or
@@ -315,6 +328,7 @@ cd client && npm start
 ## 👥 User Roles & Permissions
 
 ### 🔴 Admin
+
 - Full platform access
 - User management (create, edit, delete institutes/companies)
 - Platform analytics and monitoring
@@ -322,6 +336,7 @@ cd client && npm start
 - Blockchain transaction monitoring
 
 ### 🟢 Institute
+
 - Issue certificates to students
 - View all issued certificates
 - Manage student records
@@ -329,6 +344,7 @@ cd client && npm start
 - Download/regenerate certificates
 
 ### 🔵 Student
+
 - View personal certificates
 - Download certificates as PDF
 - Share verification links
@@ -336,6 +352,7 @@ cd client && npm start
 - Track certificate history
 
 ### 🟡 Company
+
 - Verify candidate certificates
 - Bulk verification support
 - Access certificate metadata
@@ -388,11 +405,13 @@ cd client && npm start
 ### 5. Verify Certificate (Anyone)
 
 **Method 1: QR Code**
+
 1. Scan QR code on certificate using phone camera
 2. Automatically redirects to verification page
 3. View certificate details and blockchain proof
 
 **Method 2: Certificate ID**
+
 1. Go to **Verify Certificate** page
 2. Enter certificate ID
 3. Click **"Verify"**
@@ -403,6 +422,7 @@ cd client && npm start
    - Issuer information
 
 **Method 3: API**
+
 ```bash
 curl -X POST http://localhost:5001/api/verification/verify \
   -H "Content-Type: application/json" \
@@ -418,18 +438,20 @@ The platform uses a Solidity smart contract deployed on Polygon Mumbai testnet:
 ```solidity
 // Key Functions:
 - registerCertificate(bytes32 certificateHash)
-- verifyCertificate(bytes32 certificateHash) 
+- verifyCertificate(bytes32 certificateHash)
 - getCertificateDetails(bytes32 certificateHash)
 ```
 
 ### How It Works
 
 1. **Certificate Issuance**:
+
    ```
    Certificate Data → SHA-256 Hash → Store on Blockchain
    ```
 
 2. **Verification**:
+
    ```
    Certificate ID → Retrieve Hash → Query Blockchain → Verify Match
    ```
@@ -449,6 +471,7 @@ Visit [PolygonScan Mumbai](https://mumbai.polygonscan.com/) and search for your 
 ### Authentication Endpoints
 
 #### Register User
+
 ```http
 POST /api/auth/register
 Content-Type: application/json
@@ -463,6 +486,7 @@ Content-Type: application/json
 ```
 
 #### Login
+
 ```http
 POST /api/auth/login
 Content-Type: application/json
@@ -477,6 +501,7 @@ Content-Type: application/json
 ### Certificate Endpoints
 
 #### Issue Certificate
+
 ```http
 POST /api/certificates/issue
 Authorization: Bearer <jwt_token>
@@ -492,12 +517,14 @@ Content-Type: application/json
 ```
 
 #### Get User Certificates
+
 ```http
 GET /api/certificates/user
 Authorization: Bearer <jwt_token>
 ```
 
 #### Download Certificate
+
 ```http
 GET /api/certificates/:certificateId/download
 ```
@@ -505,6 +532,7 @@ GET /api/certificates/:certificateId/download
 ### Verification Endpoints
 
 #### Verify Certificate
+
 ```http
 POST /api/verification/verify
 Content-Type: application/json
@@ -515,6 +543,7 @@ Content-Type: application/json
 ```
 
 #### Bulk Verify
+
 ```http
 POST /api/verification/bulk-verify
 Content-Type: application/json
@@ -601,6 +630,7 @@ SIHNB/
 ## 🧪 Testing
 
 ### Run Unit Tests
+
 ```bash
 # Frontend tests
 cd client
@@ -612,11 +642,13 @@ npm test
 ```
 
 ### Smart Contract Tests
+
 ```bash
 npx hardhat test
 ```
 
 ### Test Coverage
+
 ```bash
 npx hardhat coverage
 ```
@@ -626,6 +658,7 @@ npx hardhat coverage
 ### Frontend (Vercel/Netlify)
 
 1. Build the production bundle:
+
    ```bash
    cd client
    npm run build
@@ -653,6 +686,7 @@ npx hardhat coverage
 ### Common Issues
 
 **Issue**: "Cannot connect to database"
+
 ```bash
 # Solution: Check if PostgreSQL is running or use SQLite
 cd server
@@ -660,18 +694,21 @@ cd server
 ```
 
 **Issue**: "Blockchain transaction failed"
+
 ```bash
 # Solution: Ensure you have test MATIC tokens
 # Get free tokens from: https://faucet.polygon.technology/
 ```
 
 **Issue**: "IPFS upload failed"
+
 ```bash
 # Solution: Verify Pinata credentials in .env
 # Ensure PINATA_API_KEY and PINATA_SECRET_KEY are correct
 ```
 
 **Issue**: "Port already in use"
+
 ```bash
 # Solution: Kill the process or change port
 # macOS/Linux:
@@ -724,7 +761,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👨‍💻 Authors
 
-- **Certify Team** - *Initial work* - [GitHub](https://github.com/SurajsinghBayas)
+- **Certify Team** - _Initial work_ - [GitHub](https://github.com/SurajsinghBayas)
 
 ## 🙏 Acknowledgments
 
