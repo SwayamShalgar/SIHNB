@@ -33,6 +33,11 @@ const InstituteDashboard = () => {
 
   const handleLogout = () => {
     logout();
+    navigate('/login');
+  };
+
+  const handleLogoClick = () => {
+    logout();
     navigate('/');
   };
 
@@ -42,7 +47,7 @@ const InstituteDashboard = () => {
     <div className="institute-dashboard">
       <nav className="dashboard-navbar">
         <div className="nav-container">
-          <div className="nav-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+          <div className="nav-logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
             <Shield className="logo-icon" />
             <span className="logo-text">Certify Institute</span>
           </div>

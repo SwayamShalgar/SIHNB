@@ -90,6 +90,11 @@ const CompanyDashboard = () => {
 
   const handleLogout = () => {
     logout();
+    navigate('/login');
+  };
+
+  const handleLogoClick = () => {
+    logout();
     navigate('/');
   };
 
@@ -99,7 +104,7 @@ const CompanyDashboard = () => {
     <div className="company-dashboard">
       <nav className="dashboard-navbar">
         <div className="nav-container">
-          <div className="nav-logo">
+          <div className="nav-logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
             <Shield className="logo-icon" />
             <span className="logo-text">Certify Company</span>
           </div>

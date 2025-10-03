@@ -90,7 +90,7 @@ const Login = () => {
     <div className="login-page">
       <div className="login-container">
         <div className="login-header">
-          <div className="logo-section">
+          <div className="logo-section" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
             <Shield size={48} className="logo-icon" />
             <h1>Certify</h1>
           </div>

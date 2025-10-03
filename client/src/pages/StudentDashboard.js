@@ -196,6 +196,11 @@ const StudentDashboard = () => {
 
   const handleLogout = () => {
     logout();
+    navigate('/login');
+  };
+
+  const handleLogoClick = () => {
+    logout();
     navigate('/');
   };
 
@@ -248,7 +253,7 @@ const StudentDashboard = () => {
     <div className="student-dashboard">
       <nav className="dashboard-navbar">
         <div className="nav-container">
-          <div className="nav-logo">
+          <div className="nav-logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
             <Shield className="logo-icon" />
             <span className="logo-text">Certify Student</span>
           </div>

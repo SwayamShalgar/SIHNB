@@ -200,6 +200,11 @@ const AdminDashboard = () => {
 
   const handleLogout = () => {
     logout();
+    navigate('/login');
+  };
+
+  const handleLogoClick = () => {
+    logout();
     navigate('/');
   };
 
@@ -218,7 +223,7 @@ const AdminDashboard = () => {
     <div className="admin-dashboard">
       <nav className="dashboard-navbar">
         <div className="nav-container">
-          <div className="nav-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+          <div className="nav-logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
             <Shield className="logo-icon" />
             <span className="logo-text">Certify Admin</span>
           </div>
