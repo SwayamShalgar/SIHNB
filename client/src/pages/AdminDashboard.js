@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Shield, LogOut, Users, FileText, BarChart, Award, Search, Eye, Trash2, Activity, UserCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import axios from 'axios';
 import '../styles/AdminDashboard.css';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user, token, isAuthenticated, logout } = useAuth();
   const [stats, setStats] = useState({
     totalStudents: 0,
@@ -215,19 +218,20 @@ const AdminDashboard = () => {
     <div className="admin-dashboard">
       <nav className="dashboard-navbar">
         <div className="nav-container">
-          <div className="nav-logo">
+          <div className="nav-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
             <Shield className="logo-icon" />
             <span className="logo-text">Certify Admin</span>
           </div>
           <div className="nav-actions">
+            <LanguageSwitcher />
             <span className="user-info">{user.email}</span>
             <button onClick={() => navigate('/profile')} className="btn-profile">
               <UserCircle size={20} />
-              Profile
+              {t('nav.profile')}
             </button>
             <button onClick={handleLogout} className="btn-logout">
               <LogOut size={20} />
-              Logout
+              {t('nav.logout')}
             </button>
           </div>
         </div>
@@ -235,7 +239,7 @@ const AdminDashboard = () => {
 
       <div className="dashboard-content">
         <div className="welcome-section">
-          <h1>Welcome, Administrator</h1>
+          <h1>{t('dashboard.welcome')}, {t('dashboard.admin')}</h1>
           <p>Manage and oversee the entire Certify platform</p>
           
           {/* Navigation Tabs */}

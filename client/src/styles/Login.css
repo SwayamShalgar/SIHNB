@@ -33,6 +33,23 @@
   margin-bottom: 30px;
 }
 
+.language-switcher-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.language-switcher-wrapper .language-toggle {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+}
+
+.language-switcher-wrapper .language-toggle:hover {
+  background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+  transform: translateY(-2px);
+}
+
 .logo-section {
   display: flex;
   align-items: center;

@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Shield, ArrowLeft, Search, Loader, CheckCircle, XCircle } from 'lucide-react';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import axios from 'axios';
 import '../styles/VerifyCertificate.css';
 
 const VerifyCertificate = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [certificateId, setCertificateId] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -49,10 +52,13 @@ const VerifyCertificate = () => {
             <Shield className="logo-icon" />
             <span className="logo-text">Certify</span>
           </div>
-          <button onClick={() => navigate('/')} className="btn-back">
-            <ArrowLeft size={20} />
-            Back to Home
-          </button>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <LanguageSwitcher />
+            <button onClick={() => navigate('/')} className="btn-back">
+              <ArrowLeft size={20} />
+              {t('common.back')}
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -62,8 +68,8 @@ const VerifyCertificate = () => {
             <div className="header-icon">
               <Search />
             </div>
-            <h1>Verify Certificate</h1>
-            <p>Enter the certificate ID to check its authenticity on the blockchain</p>
+            <h1>{t('verify.title')}</h1>
+            <p>{t('verify.subtitle')}</p>
           </div>
 
           <form onSubmit={handleVerify} className="verify-form">
@@ -73,7 +79,7 @@ const VerifyCertificate = () => {
                 type="text"
                 value={certificateId}
                 onChange={(e) => setCertificateId(e.target.value)}
-                placeholder="Enter Certificate ID"
+                placeholder={t('verify.certificateId')}
                 className="search-input"
               />
             </div>
@@ -81,12 +87,12 @@ const VerifyCertificate = () => {
               {loading ? (
                 <>
                   <Loader className="spinner" size={20} />
-                  Verifying...
+                  {t('common.loading')}
                 </>
               ) : (
                 <>
                   <CheckCircle size={20} />
-                  Verify Certificate
+                  {t('verify.verifyButton')}
                 </>
               )}
             </button>

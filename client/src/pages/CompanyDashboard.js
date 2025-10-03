@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Shield, LogOut, Search, Award, Eye, Users, Building, CheckCircle, UserCircle, BookOpen, Download, Filter } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import axios from 'axios';
 import '../styles/CompanyDashboard.css';
 
 const CompanyDashboard = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user, isAuthenticated, logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [verificationResult, setVerificationResult] = useState(null);
@@ -96,31 +99,35 @@ const CompanyDashboard = () => {
 
   return (
     <div className="company-dashboard">
-      <nav className="dashboard-navbar">
-        <div className="nav-container">
-          <div className="nav-logo">
-            <Shield className="logo-icon" />
-            <span className="logo-text">Certify Company</span>
-          </div>
-          <div className="nav-actions">
-            <span className="user-info">{user.organization || user.email}</span>
-            <button onClick={() => navigate('/profile')} className="btn-profile">
-              <UserCircle size={20} />
-              Profile
-            </button>
-            <button onClick={handleLogout} className="btn-logout">
-              <LogOut size={20} />
-              Logout
-            </button>
-          </div>
+            <nav className="company-navbar">
+        <div className="company-nav-brand" onClick={() => navigate('/')}>
+          <Shield className="company-brand-icon" />
+          <span className="company-brand-text">Certify</span>
+        </div>
+        <div className="company-nav-right">
+          <LanguageSwitcher />
+          <button
+            className="company-profile-btn"
+            onClick={() => navigate('/profile')}
+          >
+            <UserCircle size={20} />
+            {t('nav.profile')}
+          </button>
+          <button
+            className="company-logout-btn"
+            onClick={logout}
+          >
+            <LogOut size={20} />
+            {t('nav.logout')}
+          </button>
         </div>
       </nav>
 
       <div className="dashboard-content">
         <div className="welcome-section">
           <Building size={48} className="company-icon" />
-          <h1>Welcome, {user.organization || user.full_name}</h1>
-          <p>Verify candidate certificates with blockchain security</p>
+          <h1>{t('companyDashboard.welcome')}, {user.organization || user.full_name}</h1>
+          <p>{t('companyDashboard.subtitle')}</p>
         </div>
 
         <div className="stats-bar">
@@ -128,21 +135,21 @@ const CompanyDashboard = () => {
             <CheckCircle size={24} />
             <div>
               <h3>{verifiedCount}</h3>
-              <p>Certificates Verified</p>
+              <p>{t('companyDashboard.certificatesVerified')}</p>
             </div>
           </div>
           <div className="stat-item">
             <Award size={24} />
             <div>
               <h3>100%</h3>
-              <p>Verification Accuracy</p>
+              <p>{t('companyDashboard.verificationAccuracy')}</p>
             </div>
           </div>
           <div className="stat-item">
             <BookOpen size={24} />
             <div>
               <h3>{courses.length}</h3>
-              <p>Available Courses</p>
+              <p>{t('companyDashboard.availableCourses')}</p>
             </div>
           </div>
         </div>
@@ -154,14 +161,14 @@ const CompanyDashboard = () => {
             onClick={() => setActiveTab('verify')}
           >
             <Search size={20} />
-            Verify Certificate
+            {t('companyDashboard.verifyCertificate')}
           </button>
           <button 
             className={`tab-btn ${activeTab === 'browse' ? 'active' : ''}`}
             onClick={() => setActiveTab('browse')}
           >
             <Filter size={20} />
-            Browse by Course
+            {t('companyDashboard.browseByCourse')}
           </button>
         </div>
 
@@ -169,21 +176,21 @@ const CompanyDashboard = () => {
         {activeTab === 'verify' && (
           <div className="verification-section">
             <div className="verification-card">
-              <h2>Verify Candidate Certificates</h2>
-              <p>Enter certificate ID or transaction hash to verify authenticity</p>
+              <h2>{t('companyDashboard.verifyCandidateCertificates')}</h2>
+              <p>{t('companyDashboard.enterCertificateIdOrHash')}</p>
               
               <form onSubmit={handleVerify} className="verify-form">
                 <div className="search-input-group">
                   <Search size={20} />
                   <input
                     type="text"
-                    placeholder="Enter Certificate ID or Transaction Hash"
+                    placeholder={t('companyDashboard.placeholderCertificateId')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="search-input"
                   />
                   <button type="submit" className="btn-verify">
-                    Verify
+                    {t('companyDashboard.verify')}
                   </button>
                 </div>
               </form>
@@ -193,19 +200,19 @@ const CompanyDashboard = () => {
                   {verificationResult.valid ? (
                     <>
                       <CheckCircle size={48} />
-                      <h3>Certificate Verified ✓</h3>
+                      <h3>{t('companyDashboard.certificateVerified')}</h3>
                       {verificationResult.certificate && (
                         <div className="result-details">
-                          <p><strong>Learner:</strong> {verificationResult.certificate.learnerName}</p>
-                          <p><strong>Course:</strong> {verificationResult.certificate.courseName}</p>
-                          <p><strong>Institute:</strong> {verificationResult.certificate.instituteName}</p>
-                          <p><strong>Issue Date:</strong> {new Date(verificationResult.certificate.issueDate).toLocaleDateString()}</p>
+                          <p><strong>{t('companyDashboard.learner')}:</strong> {verificationResult.certificate.learnerName}</p>
+                          <p><strong>{t('companyDashboard.course')}:</strong> {verificationResult.certificate.courseName}</p>
+                          <p><strong>{t('companyDashboard.institute')}:</strong> {verificationResult.certificate.instituteName}</p>
+                          <p><strong>{t('companyDashboard.issueDate')}:</strong> {new Date(verificationResult.certificate.issueDate).toLocaleDateString()}</p>
                           <button 
                             className="btn-view-cert"
                             onClick={() => navigate(`/certificate/${verificationResult.certificate.id}`)}
                           >
                             <Eye size={16} />
-                            View Full Certificate
+                            {t('companyDashboard.viewFullCertificate')}
                           </button>
                         </div>
                       )}
@@ -213,7 +220,7 @@ const CompanyDashboard = () => {
                   ) : (
                     <>
                       <div className="invalid-icon">✗</div>
-                      <h3>Certificate Not Valid</h3>
+                      <h3>{t('companyDashboard.certificateNotValid')}</h3>
                       <p>{verificationResult.message}</p>
                     </>
                   )}
@@ -224,20 +231,20 @@ const CompanyDashboard = () => {
             <div className="info-cards">
               <div className="info-card">
                 <Shield size={32} />
-                <h3>Blockchain Security</h3>
-                <p>All certificates are verified on the Ethereum blockchain ensuring tamper-proof records</p>
+                <h3>{t('companyDashboard.blockchainSecurity')}</h3>
+                <p>{t('companyDashboard.blockchainSecurityDesc')}</p>
               </div>
 
               <div className="info-card">
                 <Users size={32} />
-                <h3>Instant Verification</h3>
-                <p>Verify candidate credentials in seconds with real-time blockchain validation</p>
+                <h3>{t('companyDashboard.instantVerification')}</h3>
+                <p>{t('companyDashboard.instantVerificationDesc')}</p>
               </div>
 
               <div className="info-card">
                 <Award size={32} />
-                <h3>Trusted Network</h3>
-                <p>Access certificates from verified educational institutions worldwide</p>
+                <h3>{t('companyDashboard.trustedNetwork')}</h3>
+                <p>{t('companyDashboard.trustedNetworkDesc')}</p>
               </div>
             </div>
           </div>
@@ -247,8 +254,8 @@ const CompanyDashboard = () => {
         {activeTab === 'browse' && (
           <div className="browse-section">
             <div className="course-filter-card">
-              <h2>Browse Students by Course</h2>
-              <p>Select a course to view all students who have completed it</p>
+              <h2>{t('companyDashboard.browseStudentsByCourse')}</h2>
+              <p>{t('companyDashboard.selectCourseToView')}</p>
               
               <div className="course-select-group">
                 <BookOpen size={20} />
@@ -257,7 +264,7 @@ const CompanyDashboard = () => {
                   onChange={handleCourseSelect}
                   className="course-select"
                 >
-                  <option value="">Select a course...</option>
+                  <option value="">{t('companyDashboard.selectACourse')}</option>
                   {courses.map((course, index) => (
                     <option key={index} value={course}>
                       {course}
@@ -269,22 +276,22 @@ const CompanyDashboard = () => {
               {loading && (
                 <div className="loading-state">
                   <div className="loader"></div>
-                  <p>Loading students...</p>
+                  <p>{t('companyDashboard.loadingStudents')}</p>
                 </div>
               )}
 
               {!loading && selectedCourse && students.length === 0 && (
                 <div className="empty-state">
                   <Award size={64} />
-                  <h3>No Students Found</h3>
-                  <p>No certificates found for this course</p>
+                  <h3>{t('companyDashboard.noStudentsFound')}</h3>
+                  <p>{t('companyDashboard.noCertificatesForCourse')}</p>
                 </div>
               )}
 
               {!loading && students.length > 0 && (
                 <div className="students-results">
-                  <h3>Students who completed: {selectedCourse}</h3>
-                  <p className="results-count">{students.length} student{students.length !== 1 ? 's' : ''} found</p>
+                  <h3>{t('companyDashboard.studentsWhoCompleted')}: {selectedCourse}</h3>
+                  <p className="results-count">{students.length} {students.length !== 1 ? t('companyDashboard.studentsFound') : t('companyDashboard.studentFound')}</p>
                   
                   <div className="students-grid">
                     {students.map((cert) => (
@@ -331,14 +338,14 @@ const CompanyDashboard = () => {
                             onClick={() => navigate(`/certificate/${cert.id}`)}
                           >
                             <Eye size={16} />
-                            View Certificate
+                            {t('companyDashboard.viewCertificate')}
                           </button>
                           <button 
                             className="btn-download-student"
                             onClick={() => window.open(cert.pdfUrl, '_blank')}
                           >
                             <Download size={16} />
-                            Download
+                            {t('companyDashboard.download')}
                           </button>
                         </div>
                       </div>

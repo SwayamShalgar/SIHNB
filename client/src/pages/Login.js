@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Shield, LogIn, Mail, Lock, UserCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import axios from 'axios';
 import { validateLoginForm, sanitizeInput } from '../utils/validation';
 import '../styles/Login.css';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
@@ -91,7 +94,10 @@ const Login = () => {
             <Shield size={48} className="logo-icon" />
             <h1>Certify</h1>
           </div>
-          <p className="login-subtitle">Login to your account</p>
+          <p className="login-subtitle">{t('login.subtitle')}</p>
+          <div className="language-switcher-wrapper">
+            <LanguageSwitcher />
+          </div>
         </div>
 
         <form className="login-form" onSubmit={handleSubmit}>
@@ -104,7 +110,7 @@ const Login = () => {
           <div className="form-group">
             <label htmlFor="email">
               <Mail size={18} />
-              Email Address
+              {t('login.email')}
             </label>
             <input
               type="email"
@@ -122,7 +128,7 @@ const Login = () => {
           <div className="form-group">
             <label htmlFor="password">
               <Lock size={18} />
-              Password
+              {t('login.password')}
             </label>
             <input
               type="password"
@@ -130,7 +136,7 @@ const Login = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="Enter your password"
+              placeholder={t('login.password')}
               required
               className={errors.password ? 'input-error' : ''}
             />
@@ -140,7 +146,7 @@ const Login = () => {
           <div className="form-group">
             <label htmlFor="role">
               <UserCircle size={18} />
-              Login As
+              {t('register.role')}
             </label>
             <select
               id="role"
@@ -161,19 +167,19 @@ const Login = () => {
             disabled={loading}
           >
             {loading ? (
-              <span>Logging in...</span>
+              <span>{t('common.loading')}</span>
             ) : (
               <>
                 <LogIn size={20} />
-                Login
+                {t('login.loginButton')}
               </>
             )}
           </button>
         </form>
 
         <div className="login-footer">
-          <p>Don't have an account? <span onClick={() => navigate('/register')} className="link">Register here</span></p>
-          <p className="back-home" onClick={() => navigate('/')}>← Back to Home</p>
+          <p>{t('login.noAccount')} <span onClick={() => navigate('/register')} className="link">{t('login.signUp')}</span></p>
+          <p className="back-home" onClick={() => navigate('/')}>← {t('common.back')} to Home</p>
         </div>
       </div>
     </div>

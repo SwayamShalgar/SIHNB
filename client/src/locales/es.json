@@ -1,0 +1,200 @@
+{
+  "nav": {
+    "features": "Características",
+    "howItWorks": "Cómo funciona",
+    "benefits": "Beneficios",
+    "digiLocker": "DigiLocker",
+    "verifyCertificate": "Verificar Certificado",
+    "issueCertificate": "Emitir Certificado",
+    "dashboard": "Panel",
+    "profile": "Perfil",
+    "logout": "Cerrar Sesión",
+    "login": "Iniciar Sesión",
+    "register": "Registrarse"
+  },
+  "hero": {
+    "title": "Verificación Segura de Certificados en Blockchain",
+    "subtitle": "Emita, verifique y gestione certificados educativos con seguridad y transparencia incomparables",
+    "getStarted": "Comenzar",
+    "learnMore": "Saber Más",
+    "stats": {
+      "certificates": "Certificados Emitidos",
+      "institutes": "Institutos Confiables",
+      "verified": "Tasa de Éxito"
+    }
+  },
+  "features": {
+    "title": "¿Por qué elegir Certify?",
+    "subtitle": "Experimenta el futuro de la gestión de certificados con tecnología blockchain",
+    "blockchain": {
+      "title": "Seguridad Blockchain",
+      "description": "Los registros inmutables almacenados en blockchain garantizan la autenticidad"
+    },
+    "instant": {
+      "title": "Verificación Instantánea",
+      "description": "Verifique cualquier certificado en segundos con nuestro sistema de contratos inteligentes"
+    },
+    "transparency": {
+      "title": "Transparencia Total",
+      "description": "Rastro de auditoría completo de todas las operaciones de certificados"
+    },
+    "integration": {
+      "title": "Integración DigiLocker",
+      "description": "Integración perfecta con la plataforma de documentos digitales de India"
+    }
+  },
+  "howItWorks": {
+    "title": "Cómo Funciona",
+    "subtitle": "Proceso simple para todas las partes interesadas",
+    "institute": {
+      "title": "Los Institutos Emiten",
+      "description": "Las instituciones educativas crean y emiten certificados a través de nuestra plataforma"
+    },
+    "blockchain": {
+      "title": "Almacenamiento Blockchain",
+      "description": "Los datos del certificado se almacenan de forma segura en la red blockchain"
+    },
+    "verify": {
+      "title": "Cualquiera Puede Verificar",
+      "description": "Estudiantes, empleadores o cualquiera puede verificar la autenticidad del certificado al instante"
+    }
+  },
+  "benefits": {
+    "title": "Beneficios para Todos",
+    "institutes": {
+      "title": "Para Institutos",
+      "feature1": "Emisión fácil de certificados",
+      "feature2": "Carga administrativa reducida",
+      "feature3": "Credibilidad institucional mejorada"
+    },
+    "students": {
+      "title": "Para Estudiantes",
+      "feature1": "Acceso de por vida al certificado",
+      "feature2": "Compartir instantáneo con empleadores",
+      "feature3": "Integración DigiLocker"
+    },
+    "companies": {
+      "title": "Para Empresas",
+      "feature1": "Proceso de verificación rápido",
+      "feature2": "Eliminar fraude",
+      "feature3": "Decisiones de contratación confiables"
+    }
+  },
+  "cta": {
+    "title": "¿Listo para Comenzar?",
+    "subtitle": "Únase a miles de institutos y estudiantes que ya usan Certify",
+    "button": "Crear Cuenta"
+  },
+  "footer": {
+    "description": "Gestión de certificados segura, transparente y eficiente impulsada por tecnología blockchain.",
+    "product": "Producto",
+    "features": "Características",
+    "pricing": "Precios",
+    "documentation": "Documentación",
+    "company": "Empresa",
+    "about": "Sobre Nosotros",
+    "blog": "Blog",
+    "careers": "Carreras",
+    "contact": "Contacto",
+    "legal": "Legal",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos de Servicio",
+    "allRightsReserved": "Todos los derechos reservados."
+  },
+  "login": {
+    "title": "Iniciar sesión en tu cuenta",
+    "subtitle": "Ingresa tus credenciales para continuar",
+    "email": "Dirección de correo electrónico",
+    "password": "Contraseña",
+    "loginButton": "Iniciar Sesión",
+    "noAccount": "¿No tienes cuenta?",
+    "signUp": "Registrarse",
+    "errors": {
+      "emailRequired": "El correo electrónico es obligatorio",
+      "passwordRequired": "La contraseña es obligatoria",
+      "invalidCredentials": "Correo electrónico o contraseña inválidos"
+    }
+  },
+  "register": {
+    "title": "Crear Cuenta",
+    "subtitle": "Ingresa tus datos para comenzar",
+    "fullName": "Nombre Completo",
+    "email": "Dirección de Correo Electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "role": "Rol",
+    "selectRole": "Seleccionar Rol",
+    "roles": {
+      "institute": "Instituto",
+      "student": "Estudiante",
+      "company": "Empresa"
+    },
+    "registerButton": "Registrarse",
+    "haveAccount": "¿Ya tienes cuenta?",
+    "signIn": "Iniciar Sesión",
+    "errors": {
+      "nameRequired": "El nombre es obligatorio",
+      "emailRequired": "El correo electrónico es obligatorio",
+      "passwordRequired": "La contraseña es obligatoria",
+      "passwordMismatch": "Las contraseñas no coinciden",
+      "roleRequired": "El rol es obligatorio"
+    }
+  },
+  "dashboard": {
+    "welcome": "Bienvenido",
+    "statistics": "Estadísticas",
+    "recentActivity": "Actividad Reciente",
+    "certificatesIssued": "Certificados Emitidos",
+    "certificatesVerified": "Certificados Verificados",
+    "pendingApprovals": "Aprobaciones Pendientes",
+    "viewAll": "Ver Todo"
+  },
+  "verify": {
+    "title": "Verificar Certificado",
+    "subtitle": "Ingrese ID de Certificado o Escanee Código QR",
+    "certificateId": "ID de Certificado",
+    "verifyButton": "Verificar",
+    "scanQR": "Escanear Código QR",
+    "verified": "Verificado",
+    "notVerified": "No Verificado",
+    "certificateDetails": "Detalles del Certificado"
+  },
+  "issue": {
+    "title": "Emitir Certificado",
+    "subtitle": "Crear y emitir un nuevo certificado",
+    "studentName": "Nombre del Estudiante",
+    "courseName": "Nombre del Curso",
+    "issueDate": "Fecha de Emisión",
+    "issueButton": "Emitir Certificado",
+    "success": "Certificado emitido con éxito",
+    "error": "Error al emitir el certificado",
+    "downloadError": "Error al descargar el certificado. Por favor, inténtelo de nuevo.",
+    "downloadPdf": "Descargar PDF",
+    "viewCertificate": "Ver Certificado",
+    "issueAnother": "Emitir Otro",
+    "backToHome": "Volver al Inicio",
+    "certificateId": "ID del Certificado"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "view": "Ver",
+    "download": "Descargar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "actions": "Acciones",
+    "status": "Estado",
+    "date": "Fecha",
+    "name": "Nombre",
+    "email": "Correo Electrónico",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "submit": "Enviar",
+    "close": "Cerrar"
+  }
+}

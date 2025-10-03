@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Shield, LogOut, Award, Download, Eye, CheckCircle, BookOpen, Plus, X, UserCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import axios from 'axios';
 import '../styles/StudentDashboard.css';
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user, isAuthenticated, logout } = useAuth();
   const [certificates, setCertificates] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -89,15 +92,20 @@ const StudentDashboard = () => {
     <div className="student-dashboard">
       <nav className="dashboard-navbar">
         <div className="nav-container">
-          <div className="nav-logo">
+          <div className="nav-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
             <Shield className="logo-icon" />
             <span className="logo-text">Certify Student</span>
           </div>
           <div className="nav-actions">
+            <LanguageSwitcher />
             <span className="user-info">{user.full_name || user.email}</span>
             <button onClick={() => navigate('/profile')} className="btn-profile">
               <UserCircle size={20} />
-              Profile
+              {t('nav.profile')}
+            </button>
+            <button onClick={handleLogout} className="btn-logout">
+              <LogOut size={20} />
+              {t('nav.logout')}
             </button>
             <button onClick={handleLogout} className="btn-logout">
               <LogOut size={20} />

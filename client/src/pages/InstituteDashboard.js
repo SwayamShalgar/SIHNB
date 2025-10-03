@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Shield, LogOut, Award, Users, FileText, Plus, Eye, UserCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import axios from 'axios';
 import '../styles/InstituteDashboard.css';
 
 const InstituteDashboard = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user, isAuthenticated, logout } = useAuth();
   const [certificates, setCertificates] = useState([]);
 
@@ -39,19 +42,20 @@ const InstituteDashboard = () => {
     <div className="institute-dashboard">
       <nav className="dashboard-navbar">
         <div className="nav-container">
-          <div className="nav-logo">
+          <div className="nav-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
             <Shield className="logo-icon" />
             <span className="logo-text">Certify Institute</span>
           </div>
           <div className="nav-actions">
+            <LanguageSwitcher />
             <span className="user-info">{user.organization || user.email}</span>
             <button onClick={() => navigate('/profile')} className="btn-profile">
               <UserCircle size={20} />
-              Profile
+              {t('nav.profile')}
             </button>
             <button onClick={handleLogout} className="btn-logout">
               <LogOut size={20} />
-              Logout
+              {t('nav.logout')}
             </button>
           </div>
         </div>
@@ -59,7 +63,7 @@ const InstituteDashboard = () => {
 
       <div className="dashboard-content">
         <div className="welcome-section">
-          <h1>Welcome, {user.full_name || 'Institute'}</h1>
+          <h1>{t('dashboard.welcome')}, {user.full_name || 'Institute'}</h1>
           <p>Manage your institution's certificates</p>
         </div>
 
@@ -68,7 +72,7 @@ const InstituteDashboard = () => {
             <Award size={32} />
             <div>
               <h3>{certificates.length}</h3>
-              <p>Total Certificates</p>
+              <p>{t('dashboard.certificatesIssued')}</p>
             </div>
           </div>
           <div className="stat-box">
@@ -83,19 +87,19 @@ const InstituteDashboard = () => {
         <div className="action-cards">
           <div className="action-card primary" onClick={() => navigate('/issue')}>
             <Plus size={48} />
-            <h3>Issue New Certificate</h3>
+            <h3>{t('nav.issueCertificate')}</h3>
             <p>Issue a blockchain-verified certificate</p>
           </div>
 
           <div className="action-card secondary" onClick={() => navigate('/dashboard')}>
             <FileText size={48} />
-            <h3>View All Certificates</h3>
+            <h3>{t('dashboard.viewAll')}</h3>
             <p>Browse and manage issued certificates</p>
           </div>
 
           <div className="action-card tertiary" onClick={() => navigate('/verify')}>
             <Eye size={48} />
-            <h3>Verify Certificate</h3>
+            <h3>{t('verify.title')}</h3>
             <p>Verify any certificate authenticity</p>
           </div>
         </div>

@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Shield, Award, CheckCircle, Users, Building2, Search, ChevronRight, Sparkles, LogOut, UserCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import axios from 'axios';
 import '../styles/LandingPage.css';
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user, isAuthenticated, logout } = useAuth();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -54,6 +57,17 @@ const LandingPage = () => {
     return dashboardRoutes[user.role] || '/login';
   };
 
+  const getIssueCertificateRoute = () => {
+    // If not logged in, redirect to login
+    if (!user) return '/login';
+    
+    // If logged in as Institute, go to issue certificate page
+    if (user.role === 'Institute') return '/issue';
+    
+    // For other roles, redirect to their dashboard
+    return getDashboardRoute();
+  };
+
   return (
     <div className="landing-page">
       {/* Navigation */}
@@ -64,14 +78,18 @@ const LandingPage = () => {
             <span className="logo-text">Certify</span>
           </div>
           <div className="nav-links">
-            <a href="#features">Features</a>
-            <a href="#how-it-works">How it Works</a>
-            <a href="#benefits">Benefits</a>
+            {/* Language Switcher */}
+            <LanguageSwitcher />
             
-            {/* Verify Certificate - Available to all */}
-            <button onClick={() => navigate('/verify')} className="btn-secondary">
-              Verify Certificate
-            </button>
+            {/* DigiLocker Link */}
+            <a 
+              href="https://www.digilocker.gov.in/web/signup" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="btn-digilocker"
+            >
+              {t('nav.digiLocker')}
+            </a>
 
             {/* Conditional Navigation based on authentication and role */}
             {isAuthenticated() ? (
@@ -79,35 +97,35 @@ const LandingPage = () => {
                 {/* Show Issue Certificate only for Institute role */}
                 {user?.role === 'Institute' && (
                   <button onClick={() => navigate('/issue')} className="btn-primary">
-                    Issue Certificate
+                    {t('nav.issueCertificate')}
                   </button>
                 )}
                 
                 {/* Show Dashboard for logged-in users */}
                 <button onClick={() => navigate(getDashboardRoute())} className="btn-secondary">
-                  Dashboard
+                  {t('nav.dashboard')}
                 </button>
                 
                 {/* Profile button */}
                 <button onClick={() => navigate('/profile')} className="btn-profile-nav">
                   <UserCircle size={18} />
-                  Profile
+                  {t('nav.profile')}
                 </button>
                 
                 {/* Logout button */}
                 <button onClick={handleLogout} className="btn-logout-nav">
                   <LogOut size={18} />
-                  Logout
+                  {t('nav.logout')}
                 </button>
               </>
             ) : (
               <>
                 {/* Show Login and Register for non-authenticated users */}
                 <button onClick={() => navigate('/login')} className="btn-secondary">
-                  Login
+                  {t('nav.login')}
                 </button>
                 <button onClick={() => navigate('/register')} className="btn-primary">
-                  Register
+                  {t('nav.register')}
                 </button>
               </>
             )}
@@ -124,22 +142,19 @@ const LandingPage = () => {
               <span>Blockchain-Powered Verification</span>
             </div>
             <h1 className="hero-title">
-              Digital Certificates,
-              <br />
-              <span className="gradient-text">Verified Forever</span>
+              {t('hero.title')}
             </h1>
             <p className="hero-subtitle">
-              Issue tamper-proof certificates, enable instant verification, and build trust
-              with blockchain technology. No more fake credentials.
+              {t('hero.subtitle')}
             </p>
             <div className="hero-buttons">
-              <button onClick={() => navigate('/issue')} className="btn-hero-primary">
-                Get Started Free
+              <button onClick={() => navigate(getDashboardRoute())} className="btn-hero-primary">
+                {t('hero.getStarted')}
                 <ChevronRight size={20} />
               </button>
               <button onClick={() => navigate('/verify')} className="btn-hero-secondary">
                 <Search size={20} />
-                Verify a Certificate
+                {t('nav.verifyCertificate')}
               </button>
             </div>
             <div className="hero-stats">
@@ -147,21 +162,21 @@ const LandingPage = () => {
                 <span className="stat-number">
                   {loading ? '...' : stats?.heroStats?.certificates || '0'}
                 </span>
-                <span className="stat-label">Certificates</span>
+                <span className="stat-label">{t('hero.stats.certificates')}</span>
               </div>
               <div className="stat-divider"></div>
               <div className="stat-item">
                 <span className="stat-number">
                   {loading ? '...' : stats?.heroStats?.institutes || '0'}
                 </span>
-                <span className="stat-label">Institutes</span>
+                <span className="stat-label">{t('hero.stats.institutes')}</span>
               </div>
               <div className="stat-divider"></div>
               <div className="stat-item">
                 <span className="stat-number">
                   {loading ? '...' : stats?.heroStats?.verified || '100%'}
                 </span>
-                <span className="stat-label">Verified</span>
+                <span className="stat-label">{t('hero.stats.verified')}</span>
               </div>
             </div>
           </div>
@@ -196,32 +211,39 @@ const LandingPage = () => {
       <section id="features" className="features-section">
         <div className="section-container">
           <div className="section-header">
-            <h2 className="section-title">Built for Trust</h2>
+            <h2 className="section-title">{t('features.title')}</h2>
             <p className="section-subtitle">
-              Everything you need to issue and verify certificates with complete confidence
+              {t('features.subtitle')}
             </p>
           </div>
           <div className="features-grid">
             <div className="feature-card">
               <div className="feature-icon blue">
-                <Building2 />
+                <Shield />
               </div>
-              <h3>For Institutes</h3>
-              <p>Issue certificates in seconds. Generate beautiful PDFs with QR codes and store them permanently on blockchain.</p>
+              <h3>{t('features.blockchain.title')}</h3>
+              <p>{t('features.blockchain.description')}</p>
             </div>
             <div className="feature-card">
               <div className="feature-icon green">
-                <Award />
+                <CheckCircle />
               </div>
-              <h3>For Learners</h3>
-              <p>Access your certificates anytime, anywhere. Share them with employers with a simple link or QR code scan.</p>
+              <h3>{t('features.instant.title')}</h3>
+              <p>{t('features.instant.description')}</p>
             </div>
             <div className="feature-card">
               <div className="feature-icon purple">
-                <CheckCircle />
+                <Award />
               </div>
-              <h3>For Employers</h3>
-              <p>Verify any certificate instantly. Scan QR code or enter certificate ID to check authenticity in real-time.</p>
+              <h3>{t('features.transparency.title')}</h3>
+              <p>{t('features.transparency.description')}</p>
+            </div>
+            <div className="feature-card">
+              <div className="feature-icon blue">
+                <Building2 />
+              </div>
+              <h3>{t('features.integration.title')}</h3>
+              <p>{t('features.integration.description')}</p>
             </div>
           </div>
         </div>
@@ -231,8 +253,8 @@ const LandingPage = () => {
       <section id="how-it-works" className="how-it-works-section">
         <div className="section-container">
           <div className="section-header">
-            <h2 className="section-title">How It Works</h2>
-            <p className="section-subtitle">Three simple steps to secure, verifiable certificates</p>
+            <h2 className="section-title">{t('howItWorks.title')}</h2>
+            <p className="section-subtitle">{t('howItWorks.subtitle')}</p>
           </div>
           <div className="steps-container">
             <div className="step">
@@ -240,8 +262,8 @@ const LandingPage = () => {
               <div className="step-icon">
                 <Building2 />
               </div>
-              <h3>Issue Certificate</h3>
-              <p>Institute enters learner details and course information. System generates a beautiful PDF certificate with a unique QR code.</p>
+              <h3>{t('howItWorks.institute.title')}</h3>
+              <p>{t('howItWorks.institute.description')}</p>
             </div>
             <div className="step-connector"></div>
             <div className="step">
@@ -249,8 +271,8 @@ const LandingPage = () => {
               <div className="step-icon">
                 <Shield />
               </div>
-              <h3>Blockchain Storage</h3>
-              <p>Certificate hash is permanently stored on Ethereum blockchain. This ensures the certificate can never be tampered with.</p>
+              <h3>{t('howItWorks.blockchain.title')}</h3>
+              <p>{t('howItWorks.blockchain.description')}</p>
             </div>
             <div className="step-connector"></div>
             <div className="step">
@@ -258,8 +280,8 @@ const LandingPage = () => {
               <div className="step-icon">
                 <CheckCircle />
               </div>
-              <h3>Instant Verification</h3>
-              <p>Anyone can verify the certificate by scanning the QR code or entering the certificate ID. Results in seconds.</p>
+              <h3>{t('howItWorks.verify.title')}</h3>
+              <p>{t('howItWorks.verify.description')}</p>
             </div>
           </div>
         </div>
@@ -270,34 +292,34 @@ const LandingPage = () => {
         <div className="section-container">
           <div className="benefits-content">
             <div className="benefits-text">
-              <h2 className="section-title">Why Choose Certify?</h2>
+              <h2 className="section-title">{t('benefits.title')}</h2>
               <div className="benefits-list">
                 <div className="benefit-item">
                   <div className="benefit-check">✓</div>
                   <div>
-                    <h4>Immutable Records</h4>
-                    <p>Certificates stored on blockchain cannot be altered or deleted</p>
+                    <h4>{t('benefits.institutes.title')}</h4>
+                    <p>{t('benefits.institutes.feature1')}</p>
                   </div>
                 </div>
                 <div className="benefit-item">
                   <div className="benefit-check">✓</div>
                   <div>
-                    <h4>Instant Verification</h4>
-                    <p>Verify authenticity in seconds, not days or weeks</p>
+                    <h4>{t('benefits.students.title')}</h4>
+                    <p>{t('benefits.students.feature1')}</p>
                   </div>
                 </div>
                 <div className="benefit-item">
                   <div className="benefit-check">✓</div>
                   <div>
-                    <h4>Cost Effective</h4>
-                    <p>No expensive verification services or middlemen required</p>
+                    <h4>{t('benefits.companies.title')}</h4>
+                    <p>{t('benefits.companies.feature1')}</p>
                   </div>
                 </div>
                 <div className="benefit-item">
                   <div className="benefit-check">✓</div>
                   <div>
-                    <h4>Global Access</h4>
-                    <p>Access and verify certificates from anywhere in the world</p>
+                    <h4>{t('benefits.institutes.feature3')}</h4>
+                    <p>{t('benefits.students.feature3')}</p>
                   </div>
                 </div>
               </div>
@@ -324,14 +346,14 @@ const LandingPage = () => {
       {/* CTA Section */}
       <section className="cta-section">
         <div className="cta-container">
-          <h2>Ready to Get Started?</h2>
-          <p>Join institutes worldwide using blockchain to secure their certificates</p>
+          <h2>{t('cta.title')}</h2>
+          <p>{t('cta.subtitle')}</p>
           <div className="cta-buttons">
-            <button onClick={() => navigate('/issue')} className="btn-cta-primary">
-              Issue Your First Certificate
+            <button onClick={() => navigate(getIssueCertificateRoute())} className="btn-cta-primary">
+              {t('nav.issueCertificate')}
             </button>
-            <button onClick={() => navigate('/dashboard')} className="btn-cta-secondary">
-              View Dashboard
+            <button onClick={() => navigate(getDashboardRoute())} className="btn-cta-secondary">
+              {t('nav.dashboard')}
             </button>
           </div>
         </div>
@@ -345,24 +367,28 @@ const LandingPage = () => {
               <Shield size={24} />
               <span>Certify</span>
             </div>
-            <p>Secure, verifiable certificates powered by blockchain technology.</p>
+            <p>{t('footer.description')}</p>
           </div>
           <div className="footer-links">
             <div className="footer-column">
-              <h4>Product</h4>
-              <a href="#features">Features</a>
-              <a href="#how-it-works">How it Works</a>
-              <a href="/dashboard">Dashboard</a>
+              <h4>{t('footer.product')}</h4>
+              <a href="#features">{t('footer.features')}</a>
+              <a href="#how-it-works">{t('nav.howItWorks')}</a>
+              <a href="/dashboard">{t('nav.dashboard')}</a>
             </div>
             <div className="footer-column">
-              <h4>Actions</h4>
-              <a href="/issue">Issue Certificate</a>
-              <a href="/verify">Verify Certificate</a>
+              <h4>{t('footer.company')}</h4>
+              <a href="#" onClick={(e) => { e.preventDefault(); navigate(getIssueCertificateRoute()); }}>{t('nav.issueCertificate')}</a>
+              <a href="/verify">{t('nav.verifyCertificate')}</a>
+            </div>
+            <div className="footer-column">
+              <h4>{t('footer.legal')}</h4>
+              <a href="https://www.digilocker.gov.in/web/signup" target="_blank" rel="noopener noreferrer">{t('nav.digiLocker')}</a>
             </div>
           </div>
         </div>
         <div className="footer-bottom">
-          <p>&copy; 2025 Certify. Built with blockchain technology.</p>
+          <p>&copy; 2025 Certify. {t('footer.allRightsReserved')}</p>
         </div>
       </footer>
     </div>

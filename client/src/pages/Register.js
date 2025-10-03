@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Shield, UserPlus, Mail, Lock, UserCircle, User, Building, Phone } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import axios from 'axios';
 import { validateRegisterForm, sanitizeInput } from '../utils/validation';
 import '../styles/Register.css';
 
 const Register = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
@@ -115,7 +118,10 @@ const Register = () => {
             <Shield size={48} className="logo-icon" />
             <h1>Certify</h1>
           </div>
-          <p className="register-subtitle">Create your account</p>
+          <p className="register-subtitle">{t('register.subtitle')}</p>
+          <div className="language-switcher-wrapper">
+            <LanguageSwitcher />
+          </div>
         </div>
 
         {pendingApproval ? (
@@ -136,7 +142,7 @@ const Register = () => {
               onClick={() => navigate('/login')}
               style={{ marginTop: '20px' }}
             >
-              Go to Login
+              {t('login.loginButton')}
             </button>
           </div>
         ) : (
@@ -156,7 +162,7 @@ const Register = () => {
             <div className="form-group">
               <label htmlFor="full_name">
                 <User size={18} />
-                Full Name
+                {t('register.fullName')}
               </label>
               <input
                 type="text"
@@ -164,7 +170,7 @@ const Register = () => {
                 name="full_name"
                 value={formData.full_name}
                 onChange={handleChange}
-                placeholder="Enter your full name"
+                placeholder={t('register.fullName')}
                 required
                 className={errors.full_name ? 'input-error' : ''}
               />
@@ -174,7 +180,7 @@ const Register = () => {
             <div className="form-group">
               <label htmlFor="role">
                 <UserCircle size={18} />
-                Register As
+                {t('register.role')}
               </label>
               <select
                 id="role"
@@ -193,7 +199,7 @@ const Register = () => {
           <div className="form-group">
             <label htmlFor="email">
               <Mail size={18} />
-              Email Address
+              {t('register.email')}
             </label>
             <input
               type="email"
@@ -248,7 +254,7 @@ const Register = () => {
             <div className="form-group">
               <label htmlFor="password">
                 <Lock size={18} />
-                Password
+                {t('register.password')}
               </label>
               <input
                 type="password"
@@ -256,7 +262,7 @@ const Register = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Create a password (min 6 chars)"
+                placeholder={t('register.password')}
                 required
                 className={errors.password ? 'input-error' : ''}
               />
@@ -266,7 +272,7 @@ const Register = () => {
             <div className="form-group">
               <label htmlFor="confirmPassword">
                 <Lock size={18} />
-                Confirm Password
+                {t('register.confirmPassword')}
               </label>
               <input
                 type="password"
@@ -274,7 +280,7 @@ const Register = () => {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                placeholder="Confirm your password"
+                placeholder={t('register.confirmPassword')}
                 required
                 className={errors.confirmPassword ? 'input-error' : ''}
               />
@@ -288,11 +294,11 @@ const Register = () => {
             disabled={loading}
           >
             {loading ? (
-              <span>Creating account...</span>
+              <span>{t('common.loading')}</span>
             ) : (
               <>
                 <UserPlus size={20} />
-                Register
+                {t('register.registerButton')}
               </>
             )}
           </button>
@@ -301,8 +307,8 @@ const Register = () => {
 
         {!pendingApproval && (
           <div className="register-footer">
-            <p>Already have an account? <span onClick={() => navigate('/login')} className="link">Login here</span></p>
-            <p className="back-home" onClick={() => navigate('/')}>← Back to Home</p>
+            <p>{t('register.haveAccount')} <span onClick={() => navigate('/login')} className="link">{t('register.signIn')}</span></p>
+            <p className="back-home" onClick={() => navigate('/')}>← {t('common.back')} to Home</p>
           </div>
         )}
       </div>

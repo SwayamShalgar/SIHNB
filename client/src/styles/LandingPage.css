@@ -227,6 +227,70 @@
   box-shadow: var(--shadow-md);
 }
 
+/* DigiLocker Button - Blue with Animation */
+.btn-digilocker {
+  padding: 0.75rem 2rem;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff !important;
+  text-decoration: none;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 12px 0 rgba(37, 99, 235, 0.25);
+  animation: pulse-blue 2s ease-in-out infinite;
+  min-width: 130px;
+}
+
+.btn-digilocker:visited {
+  color: #ffffff !important;
+}
+
+.btn-digilocker::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.btn-digilocker:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 24px 0 rgba(37, 99, 235, 0.4);
+  animation: none;
+  color: #ffffff !important;
+}
+
+.btn-digilocker:hover::before {
+  left: 100%;
+}
+
+.btn-digilocker:active {
+  transform: translateY(0) scale(1);
+}
+
+@keyframes pulse-blue {
+  0%, 100% {
+    box-shadow: 0 4px 12px 0 rgba(37, 99, 235, 0.25);
+  }
+  50% {
+    box-shadow: 0 4px 20px 0 rgba(37, 99, 235, 0.45);
+  }
+}
+
 .btn-profile-nav {
   padding: 0.625rem 1.25rem;
   border-radius: var(--radius-lg);
@@ -1044,6 +1108,13 @@
   .btn-primary, .btn-secondary, .btn-profile-nav, .btn-logout-nav {
     padding: 0.5rem 1rem;
     font-size: 0.8rem;
+  }
+  
+  .btn-digilocker {
+    padding: 0.65rem 1.5rem;
+    font-size: 0.8rem;
+    min-width: 110px;
+    animation: pulse-blue 2s ease-in-out infinite; /* Keep animation on mobile */
   }
   
   .hero-title {
