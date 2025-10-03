@@ -377,11 +377,6 @@ const LandingPage = () => {
               <a href="/dashboard">{t('nav.dashboard')}</a>
             </div>
             <div className="footer-column">
-              <h4>{t('footer.company')}</h4>
-              <a href="#" onClick={(e) => { e.preventDefault(); navigate(getIssueCertificateRoute()); }}>{t('nav.issueCertificate')}</a>
-              <a href="/verify">{t('nav.verifyCertificate')}</a>
-            </div>
-            <div className="footer-column">
               <h4>{t('footer.legal')}</h4>
               <a href="https://www.digilocker.gov.in/web/signup" target="_blank" rel="noopener noreferrer">{t('nav.digiLocker')}</a>
             </div>
