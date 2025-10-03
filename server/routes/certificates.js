@@ -233,6 +233,147 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// Get user-specific certificate statistics
+router.get('/user-stats', async (req, res) => {
+  try {
+    const { role, institute_name, user_id } = req.query;
+    console.log('User stats request received:', { role, institute_name, user_id });
+    
+    let stats = {
+      totalCertificates: 0,
+      issuedCertificates: 0,
+      verifiedCertificates: 0,
+      totalStudents: 0,
+      totalUsers: 0,
+      activeInstitutes: 0,
+      totalCandidates: 0
+    };
+
+    try {
+      // Try PostgreSQL first
+      if (role === 'Institute' && institute_name) {
+        // Get institute-specific stats
+        const certResult = await pool.query(
+          'SELECT COUNT(*) as count FROM certificates WHERE institute_name = $1',
+          [institute_name]
+        );
+        stats.issuedCertificates = parseInt(certResult.rows[0].count) || 0;
+        stats.totalCertificates = stats.issuedCertificates;
+        stats.verifiedCertificates = stats.issuedCertificates; // All issued are verified
+
+        // Get unique students count
+        const studentsResult = await pool.query(
+          'SELECT COUNT(DISTINCT learner_email) as count FROM certificates WHERE institute_name = $1 AND learner_email IS NOT NULL',
+          [institute_name]
+        );
+        stats.totalStudents = parseInt(studentsResult.rows[0].count) || 0;
+
+        // Get courses count for this institute
+        const coursesResult = await pool.query(
+          'SELECT COUNT(*) as count FROM courses WHERE institute_id = $1 AND status = $2',
+          [user_id, 'active']
+        );
+        stats.activeCourses = parseInt(coursesResult.rows[0].count) || 0;
+
+        console.log('Institute stats computed:', stats);
+
+      } else if (role === 'Company') {
+        // Company stats - certificates they've verified
+        const certResult = await pool.query('SELECT COUNT(*) as count FROM certificates');
+        stats.verifiedCertificates = parseInt(certResult.rows[0].count) || 0;
+        stats.totalCertificates = stats.verifiedCertificates;
+        
+        // Unique candidates screened
+        const candidatesResult = await pool.query(
+          'SELECT COUNT(DISTINCT learner_email) as count FROM certificates WHERE learner_email IS NOT NULL'
+        );
+        stats.totalCandidates = parseInt(candidatesResult.rows[0].count) || 0;
+
+      } else if (role === 'Admin') {
+        // Admin stats - platform-wide
+        const certResult = await pool.query('SELECT COUNT(*) as count FROM certificates');
+        stats.totalCertificates = parseInt(certResult.rows[0].count) || 0;
+        stats.verifiedCertificates = stats.totalCertificates;
+
+        // Total users
+        const usersResult = await pool.query('SELECT COUNT(*) as count FROM users');
+        stats.totalUsers = parseInt(usersResult.rows[0].count) || 0;
+
+        // Active institutes
+        const institutesResult = await pool.query(
+          "SELECT COUNT(*) as count FROM users WHERE role = 'Institute'"
+        );
+        stats.activeInstitutes = parseInt(institutesResult.rows[0].count) || 0;
+
+      } else {
+        // Student or default - their certificates
+        const certResult = await pool.query('SELECT COUNT(*) as count FROM certificates');
+        stats.totalCertificates = parseInt(certResult.rows[0].count) || 0;
+      }
+      
+      return res.json({
+        ...stats,
+        source: 'postgresql'
+      });
+
+    } catch (pgError) {
+      console.error('PostgreSQL query failed, falling back to SQLite:', pgError.message);
+      
+      // Fallback to SQLite
+      if (role === 'Institute' && institute_name) {
+        const sql = 'SELECT COUNT(*) as count FROM certificates WHERE institute_name = ?';
+        db.get(sql, [institute_name], (err, row) => {
+          if (err) {
+            console.error('SQLite error:', err);
+            return res.json({ ...stats, source: 'fallback' });
+          }
+          
+          stats.issuedCertificates = row.count || 0;
+          stats.totalCertificates = stats.issuedCertificates;
+          stats.verifiedCertificates = stats.issuedCertificates;
+
+          // Get unique students
+          const studentsSql = 'SELECT COUNT(DISTINCT learner_email) as count FROM certificates WHERE institute_name = ? AND learner_email IS NOT NULL';
+          db.get(studentsSql, [institute_name], (err2, row2) => {
+            if (!err2 && row2) {
+              stats.totalStudents = row2.count || 0;
+            }
+
+            // Get courses count
+            const coursesSql = 'SELECT COUNT(*) as count FROM courses WHERE institute_id = ? AND status = ?';
+            db.get(coursesSql, [user_id, 'active'], (err3, row3) => {
+              if (!err3 && row3) {
+                stats.activeCourses = row3.count || 0;
+              }
+              res.json({ ...stats, source: 'sqlite' });
+            });
+          });
+        });
+      } else {
+        const sql = 'SELECT COUNT(*) as count FROM certificates';
+        db.get(sql, [], (err, row) => {
+          if (err) {
+            console.error('SQLite error:', err);
+            return res.json({ ...stats, source: 'fallback' });
+          }
+          
+          stats.totalCertificates = row.count || 0;
+          res.json({ ...stats, source: 'sqlite' });
+        });
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching user stats:', error);
+    res.json({
+      totalCertificates: 0,
+      issuedCertificates: 0,
+      verifiedCertificates: 0,
+      totalStudents: 0,
+      source: 'error'
+    });
+  }
+});
+
 // Get all certificates (for institute dashboard)
 router.get('/', async (req, res) => {
   try {

@@ -1,23 +1,112 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, ArrowLeft, Award, Calendar, Building2, User, Loader } from 'lucide-react';
+import { Shield, ArrowLeft, Award, Calendar, User, Loader, Search, BookOpen, X } from 'lucide-react';
 import axios from 'axios';
 import { validateCertificateForm, sanitizeInput } from '../utils/validation';
+import { useAuth } from '../context/AuthContext';
 import '../styles/IssueCertificate.css';
 
 const IssueCertificate = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [certificateData, setCertificateData] = useState(null);
   const [errors, setErrors] = useState({});
+  const [courses, setCourses] = useState([]);
+  const [filteredCourses, setFilteredCourses] = useState([]);
+  const [courseSearch, setCourseSearch] = useState('');
+  const [showCourseDropdown, setShowCourseDropdown] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState(null);
   const [formData, setFormData] = useState({
     learner_name: '',
     learner_email: '',
     course_name: '',
-    institute_name: '',
+    institute_name: user?.organization || user?.full_name || '',
     issue_date: new Date().toISOString().split('T')[0]
   });
+
+  useEffect(() => {
+    fetchCourses();
+  }, [user]);
+
+  useEffect(() => {
+    // Set institute name when user data loads
+    if (user && !formData.institute_name) {
+      setFormData(prev => ({
+        ...prev,
+        institute_name: user.organization || user.full_name || ''
+      }));
+    }
+  }, [user]);
+
+  useEffect(() => {
+    // Filter courses based on search
+    if (courseSearch.trim() === '') {
+      setFilteredCourses(courses);
+    } else {
+      const searchLower = courseSearch.toLowerCase();
+      const filtered = courses.filter(course =>
+        course.course_name.toLowerCase().includes(searchLower) ||
+        course.course_code.toLowerCase().includes(searchLower) ||
+        (course.category && course.category.toLowerCase().includes(searchLower))
+      );
+      setFilteredCourses(filtered);
+    }
+  }, [courseSearch, courses]);
+
+  useEffect(() => {
+    // Close dropdown when clicking outside
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.course-search-wrapper')) {
+        setShowCourseDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const fetchCourses = async () => {
+    try {
+      if (!user?.id) return;
+      
+      const response = await axios.get(`/api/courses/institute/${user.id}`);
+      setCourses(response.data.courses || []);
+      setFilteredCourses(response.data.courses || []);
+    } catch (error) {
+      console.error('Error fetching courses:', error);
+    }
+  };
+
+  const handleCourseSelect = (course) => {
+    setSelectedCourse(course);
+    setCourseSearch(`${course.course_code} - ${course.course_name}`);
+    setFormData({
+      ...formData,
+      course_name: course.course_name
+    });
+    setShowCourseDropdown(false);
+    
+    // Clear course name error if exists
+    if (errors.course_name) {
+      setErrors({
+        ...errors,
+        course_name: ''
+      });
+    }
+  };
+
+  const clearCourseSelection = () => {
+    setSelectedCourse(null);
+    setCourseSearch('');
+    setFormData({
+      ...formData,
+      course_name: ''
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -66,11 +155,13 @@ const IssueCertificate = () => {
     setSuccess(false);
     setCertificateData(null);
     setErrors({});
+    setSelectedCourse(null);
+    setCourseSearch('');
     setFormData({
       learner_name: '',
       learner_email: '',
       course_name: '',
-      institute_name: '',
+      institute_name: user?.organization || user?.full_name || '',
       issue_date: new Date().toISOString().split('T')[0]
     });
   };
@@ -136,39 +227,86 @@ const IssueCertificate = () => {
                 {errors.learner_email && <span className="field-error">{errors.learner_email}</span>}
               </div>
 
-              <div className="form-group">
+              <div className="form-group course-select-group">
                 <label>
-                  <Award size={18} />
-                  Course Name *
+                  <BookOpen size={18} />
+                  Select Course *
                 </label>
-                <input
-                  type="text"
-                  name="course_name"
-                  value={formData.course_name}
-                  onChange={handleChange}
-                  placeholder="Enter course name"
-                  required
-                  className={errors.course_name ? 'input-error' : ''}
-                />
-                {errors.course_name && <span className="field-error">{errors.course_name}</span>}
-              </div>
+                <div className="course-search-wrapper">
+                  <div className="search-input-wrapper">
+                    <Search size={18} className="search-icon" />
+                    <input
+                      type="text"
+                      value={courseSearch}
+                      onChange={(e) => {
+                        setCourseSearch(e.target.value);
+                        setShowCourseDropdown(true);
+                      }}
+                      onFocus={() => setShowCourseDropdown(true)}
+                      placeholder="Search courses by name or code..."
+                      className={errors.course_name ? 'input-error' : ''}
+                    />
+                    {selectedCourse && (
+                      <button
+                        type="button"
+                        className="clear-course-btn"
+                        onClick={clearCourseSelection}
+                        title="Clear selection"
+                      >
+                        <X size={18} />
+                      </button>
+                    )}
+                  </div>
 
-              <div className="form-group">
-                <label>
-                  <Building2 size={18} />
-                  Institute Name *
-                </label>
-                <input
-                  type="text"
-                  name="institute_name"
-                  value={formData.institute_name}
-                  onChange={handleChange}
-                  placeholder="Enter institute name (letters only)"
-                  required
-                  className={errors.institute_name ? 'input-error' : ''}
-                />
-                {errors.institute_name && <span className="field-error">{errors.institute_name}</span>}
-                <small className="field-hint">Only letters, spaces, hyphens, and periods allowed</small>
+                  {showCourseDropdown && filteredCourses.length > 0 && (
+                    <div className="course-dropdown">
+                      {filteredCourses.map((course) => (
+                        <div
+                          key={course.id}
+                          className="course-option"
+                          onClick={() => handleCourseSelect(course)}
+                        >
+                          <div className="course-option-header">
+                            <span className="course-code-badge">{course.course_code}</span>
+                            <span className="course-name">{course.course_name}</span>
+                          </div>
+                          <div className="course-option-meta">
+                            {course.category && (
+                              <span className="course-category">
+                                <Award size={12} />
+                                {course.category}
+                              </span>
+                            )}
+                            {course.level && (
+                              <span className="course-level">{course.level}</span>
+                            )}
+                            {course.duration && (
+                              <span className="course-duration">
+                                {course.duration} {course.duration_unit}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {showCourseDropdown && courseSearch && filteredCourses.length === 0 && (
+                    <div className="course-dropdown">
+                      <div className="no-courses-found">
+                        <BookOpen size={24} />
+                        <p>No courses found</p>
+                        <small>Try a different search term</small>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {errors.course_name && <span className="field-error">{errors.course_name}</span>}
+                {courses.length === 0 && (
+                  <small className="field-hint warning">
+                    No courses available. Please add courses in your profile first.
+                  </small>
+                )}
               </div>
 
               <div className="form-group">
