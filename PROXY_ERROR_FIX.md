@@ -5,12 +5,13 @@
 The React client was trying to proxy requests to `http://localhost:5002`, but the server was running on port `5001`, causing connection refused errors.
 
 ### Error Messages:
+
 ```
-Proxy error: Could not proxy request /main.a6d36828fe884669926f.hot-update.json 
+Proxy error: Could not proxy request /main.a6d36828fe884669926f.hot-update.json
 from localhost:3000 to http://localhost:5002.
 (ECONNREFUSED)
 
-Proxy error: Could not proxy request /api/stats 
+Proxy error: Could not proxy request /api/stats
 from localhost:3000 to http://localhost:5002.
 (ECONNREFUSED)
 ```
@@ -18,6 +19,7 @@ from localhost:3000 to http://localhost:5002.
 ## Root Cause 🔍
 
 **Mismatch between client proxy configuration and server port:**
+
 - Client proxy: `http://localhost:5002` ❌
 - Server port: `5001` ✅
 
@@ -28,11 +30,13 @@ from localhost:3000 to http://localhost:5002.
 **File:** `/client/package.json`
 
 **Changed:**
+
 ```json
 "proxy": "http://localhost:5002"  // ❌ Wrong
 ```
 
 **To:**
+
 ```json
 "proxy": "http://localhost:5001"  // ✅ Correct
 ```
@@ -40,7 +44,9 @@ from localhost:3000 to http://localhost:5002.
 ### 2. Created Environment Files
 
 #### A. Client `.env` File
+
 Created `/client/.env` with:
+
 ```env
 REACT_APP_API_URL=http://localhost:5001
 REACT_APP_VERSION=1.0.0
@@ -48,16 +54,19 @@ REACT_APP_ENABLE_BLOCKCHAIN=true
 ```
 
 #### B. Client `.env.example` File
+
 Created `/client/.env.example` as a template for future reference.
 
 ### 3. Server Port Configuration
 
 The server is configured in `/server/index.js`:
+
 ```javascript
 const PORT = process.env.PORT || 5001;
 ```
 
 This means:
+
 - It uses `PORT` from `.env` file if available
 - Falls back to `5001` if not specified
 
@@ -85,10 +94,12 @@ npm start
 ### Step 3: Verify Ports
 
 Check that:
+
 - ✅ Client runs on: `http://localhost:3000`
 - ✅ Server runs on: `http://localhost:5001`
 
 You should see in server terminal:
+
 ```
 🚀 Server running on port 5001
 ```
@@ -98,6 +109,7 @@ You should see in server terminal:
 ### Client Configuration
 
 **File:** `/client/package.json`
+
 ```json
 {
   "proxy": "http://localhost:5001"
@@ -105,6 +117,7 @@ You should see in server terminal:
 ```
 
 **File:** `/client/.env`
+
 ```env
 REACT_APP_API_URL=http://localhost:5001
 ```
@@ -112,11 +125,13 @@ REACT_APP_API_URL=http://localhost:5001
 ### Server Configuration
 
 **File:** `/server/index.js`
+
 ```javascript
 const PORT = process.env.PORT || 5001;
 ```
 
 **File:** `/server/.env` (create if missing)
+
 ```env
 PORT=5001
 ```
@@ -124,22 +139,26 @@ PORT=5001
 ## Testing the Fix 🧪
 
 ### Test 1: Check Server is Running
+
 ```bash
 curl http://localhost:5001/api/health
 ```
 
 Expected response:
+
 ```json
-{"status":"ok","message":"Server is running"}
+{ "status": "ok", "message": "Server is running" }
 ```
 
 ### Test 2: Check Client Can Access API
+
 1. Open browser: `http://localhost:3000`
 2. Open DevTools → Network tab
 3. Look for API calls to `/api/stats`
 4. Should show status: `200 OK` (not 502 or 504)
 
 ### Test 3: Check Proxy is Working
+
 ```bash
 # In browser console:
 fetch('/api/health')
@@ -148,8 +167,9 @@ fetch('/api/health')
 ```
 
 Expected output:
+
 ```json
-{status: "ok", message: "Server is running"}
+{ "status": "ok", "message": "Server is running" }
 ```
 
 ## Common Issues & Solutions 💡
@@ -157,6 +177,7 @@ Expected output:
 ### Issue 1: Still Getting Proxy Error After Fix
 
 **Solution:**
+
 ```bash
 # 1. Stop the React dev server (Ctrl+C)
 # 2. Clear npm cache
@@ -168,6 +189,7 @@ npm start
 ### Issue 2: Server Not Running on 5001
 
 **Check:**
+
 ```bash
 # See what's running on port 5001
 lsof -i :5001
@@ -176,6 +198,7 @@ netstat -ano | findstr :5001
 ```
 
 **Solution:** Make sure server is running:
+
 ```bash
 cd server
 npm start
@@ -186,6 +209,7 @@ npm start
 **Error:** `Port 5001 is already in use`
 
 **Solution:**
+
 ```bash
 # Kill the process using port 5001
 # macOS/Linux:
@@ -199,6 +223,7 @@ taskkill /PID <PID> /F
 ### Issue 4: Changes Not Taking Effect
 
 **Solution:**
+
 ```bash
 # 1. Stop all servers
 # 2. Delete node_modules and reinstall
@@ -216,6 +241,7 @@ npm install
 ## Environment-Specific Configuration 🌍
 
 ### Development
+
 ```env
 # Client
 REACT_APP_API_URL=http://localhost:5001
@@ -225,6 +251,7 @@ PORT=5001
 ```
 
 ### Production
+
 ```env
 # Client
 REACT_APP_API_URL=https://api.yourdomain.com
@@ -265,12 +292,14 @@ PORT=5001 (or as configured by hosting platform)
 ### Option 1: Run Separately (Recommended for Development)
 
 **Terminal 1 - Server:**
+
 ```bash
 cd server
 npm start
 ```
 
 **Terminal 2 - Client:**
+
 ```bash
 cd client
 npm start
@@ -279,6 +308,7 @@ npm start
 ### Option 2: Run Concurrently (Optional)
 
 You can add to root `package.json`:
+
 ```json
 {
   "scripts": {
@@ -290,6 +320,7 @@ You can add to root `package.json`:
 ```
 
 Then run:
+
 ```bash
 npm run dev
 ```
@@ -315,6 +346,7 @@ npm run dev
 If server `.env` doesn't exist, create it:
 
 **File:** `/server/.env`
+
 ```env
 PORT=5001
 NODE_ENV=development

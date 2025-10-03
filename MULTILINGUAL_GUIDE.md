@@ -1,7 +1,9 @@
 # Multilingual Support Documentation
 
 ## Overview
+
 The Certify application now supports **7 languages** including:
+
 - 🇬🇧 **English** (en)
 - 🇮🇳 **Hindi (हिंदी)** (hi)
 - 🇮🇳 **Tamil (தமிழ்)** (ta)
@@ -13,18 +15,22 @@ The Certify application now supports **7 languages** including:
 ## Features
 
 ### 1. **Language Switcher Component**
+
 - Beautiful dropdown UI with flag emojis
 - Persistent language selection (saved in localStorage)
 - Smooth animations and transitions
 - Mobile-responsive design
 
 ### 2. **Automatic Language Detection**
+
 - Detects browser language on first visit
 - Falls back to English if language not supported
 - Remembers user's language preference
 
 ### 3. **Complete Coverage**
+
 All pages are translated including:
+
 - ✅ Landing Page
 - ✅ Login Page
 - ✅ Registration Page
@@ -56,16 +62,19 @@ client/src/
 ### Adding Translation to a Page
 
 1. Import the translation hook:
+
 ```javascript
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 ```
 
 2. Use the hook in your component:
+
 ```javascript
 const { t } = useTranslation();
 ```
 
 3. Use translations in JSX:
+
 ```javascript
 <h1>{t('hero.title')}</h1>
 <p>{t('hero.subtitle')}</p>
@@ -74,9 +83,9 @@ const { t } = useTranslation();
 ### Example Implementation
 
 ```javascript
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import LanguageSwitcher from '../components/LanguageSwitcher';
+import React from "react";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 const MyPage = () => {
   const { t } = useTranslation();
@@ -84,9 +93,9 @@ const MyPage = () => {
   return (
     <div>
       <LanguageSwitcher />
-      <h1>{t('nav.features')}</h1>
-      <p>{t('hero.subtitle')}</p>
-      <button>{t('common.submit')}</button>
+      <h1>{t("nav.features")}</h1>
+      <p>{t("hero.subtitle")}</p>
+      <button>{t("common.submit")}</button>
     </div>
   );
 };
@@ -97,6 +106,7 @@ export default MyPage;
 ## Translation Keys Structure
 
 ### Navigation (`nav.*`)
+
 - `nav.features` - Features link
 - `nav.howItWorks` - How it Works link
 - `nav.benefits` - Benefits link
@@ -109,6 +119,7 @@ export default MyPage;
 - `nav.register` - Register button
 
 ### Hero Section (`hero.*`)
+
 - `hero.title` - Main title
 - `hero.subtitle` - Subtitle
 - `hero.getStarted` - Get Started button
@@ -117,6 +128,7 @@ export default MyPage;
 - `hero.stats.verified` - Verified stat label
 
 ### Features (`features.*`)
+
 - `features.title` - Section title
 - `features.subtitle` - Section subtitle
 - `features.blockchain.title` - Blockchain feature title
@@ -124,6 +136,7 @@ export default MyPage;
 - etc.
 
 ### Common Elements (`common.*`)
+
 - `common.loading` - Loading text
 - `common.error` - Error message
 - `common.success` - Success message
@@ -135,53 +148,63 @@ export default MyPage;
 ## Adding a New Language
 
 1. **Create translation file**:
+
    - Create a new JSON file in `src/locales/` (e.g., `fr.json` for French)
    - Copy the structure from `en.json`
    - Translate all values
 
 2. **Import in i18n.js**:
+
 ```javascript
-import frTranslations from './locales/fr.json';
+import frTranslations from "./locales/fr.json";
 ```
 
 3. **Add to resources**:
+
 ```javascript
 const resources = {
   // ... existing languages
   fr: {
-    translation: frTranslations
-  }
+    translation: frTranslations,
+  },
 };
 ```
 
 4. **Update LanguageSwitcher.js**:
+
 ```javascript
 const languages = [
   // ... existing languages
-  { code: 'fr', name: 'Français', flag: '🇫🇷' }
+  { code: "fr", name: "Français", flag: "🇫🇷" },
 ];
 ```
 
 ## Best Practices
 
 ### 1. **Consistent Key Naming**
+
 - Use dot notation for nested keys
 - Group related translations together
 - Use descriptive names
 
 ### 2. **Avoid Hardcoded Text**
+
 ❌ Bad:
+
 ```javascript
 <button>Submit</button>
 ```
 
 ✅ Good:
+
 ```javascript
-<button>{t('common.submit')}</button>
+<button>{t("common.submit")}</button>
 ```
 
 ### 3. **Handle Plurals**
+
 For plural forms, use i18next's plural feature:
+
 ```json
 {
   "certificate": "Certificate",
@@ -190,12 +213,17 @@ For plural forms, use i18next's plural feature:
 ```
 
 ### 4. **Dynamic Values**
+
 Use interpolation for dynamic content:
+
 ```javascript
-{t('welcome', { name: user.name })}
+{
+  t("welcome", { name: user.name });
+}
 ```
 
 Translation file:
+
 ```json
 {
   "welcome": "Welcome, {{name}}!"
@@ -205,6 +233,7 @@ Translation file:
 ## Testing
 
 ### Manual Testing
+
 1. Open the application
 2. Click the language switcher (Globe icon)
 3. Select different languages
@@ -212,19 +241,23 @@ Translation file:
 5. Check that language persists on page reload
 
 ### Verify Coverage
+
 - Navigate through all pages
 - Check all buttons, labels, and messages
 - Test form validation messages
 - Verify error messages display correctly
 
 ## Browser Compatibility
+
 The i18next library works on:
+
 - Chrome/Edge: ✅
 - Firefox: ✅
 - Safari: ✅
 - Mobile browsers: ✅
 
 ## Performance
+
 - Translation files are loaded only once
 - Lazy loading can be implemented for larger apps
 - Minimal bundle size impact (~50KB for all languages)
@@ -232,16 +265,20 @@ The i18next library works on:
 ## Future Enhancements
 
 ### Planned Features
+
 1. **More Languages**
+
    - Kannada (ಕನ್ನಡ)
    - Gujarati (ગુજરાતી)
    - Malayalam (മലയാളം)
    - Punjabi (ਪੰਜਾਬੀ)
 
 2. **RTL Support**
+
    - Add support for right-to-left languages (Arabic, Urdu)
 
 3. **Language Auto-Detection**
+
    - Detect user location and suggest language
 
 4. **Translation Management**
@@ -251,6 +288,7 @@ The i18next library works on:
 ## Support
 
 For issues or questions about multilingual support:
+
 1. Check translation files in `src/locales/`
 2. Verify i18n configuration in `src/i18n.js`
 3. Ensure `useTranslation` hook is imported correctly
@@ -258,6 +296,7 @@ For issues or questions about multilingual support:
 ## Contributing
 
 To add or improve translations:
+
 1. Fork the repository
 2. Add/edit translation files in `src/locales/`
 3. Test thoroughly

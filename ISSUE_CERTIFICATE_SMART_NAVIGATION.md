@@ -7,6 +7,7 @@ Implemented intelligent navigation for all "Issue Certificate" buttons on the la
 ## Change Summary
 
 Added smart routing logic that:
+
 - **Redirects to Login** if user is not authenticated
 - **Redirects to Issue Certificate page** if logged in as Institute
 - **Redirects to Dashboard** for other authenticated roles
@@ -22,11 +23,11 @@ Added `getIssueCertificateRoute()` function:
 ```javascript
 const getIssueCertificateRoute = () => {
   // If not logged in, redirect to login
-  if (!user) return '/login';
-  
+  if (!user) return "/login";
+
   // If logged in as Institute, go to issue certificate page
-  if (user.role === 'Institute') return '/issue';
-  
+  if (user.role === "Institute") return "/issue";
+
   // For other roles, redirect to their dashboard
   return getDashboardRoute();
 };
@@ -35,10 +36,12 @@ const getIssueCertificateRoute = () => {
 #### Logic Breakdown:
 
 1. **No User (Not Logged In)**
+
    - Returns: `/login`
    - Reason: User must login first to access protected features
 
 2. **Institute User (Logged In)**
+
    - Returns: `/issue`
    - Reason: Institutes have permission to issue certificates
 
@@ -51,34 +54,48 @@ const getIssueCertificateRoute = () => {
 #### A. CTA Section Button (Line ~347)
 
 **Before:**
+
 ```javascript
-<button onClick={() => navigate('/issue')} className="btn-cta-primary">
-  {t('nav.issueCertificate')}
+<button onClick={() => navigate("/issue")} className="btn-cta-primary">
+  {t("nav.issueCertificate")}
 </button>
 ```
 
 **After:**
+
 ```javascript
-<button onClick={() => navigate(getIssueCertificateRoute())} className="btn-cta-primary">
-  {t('nav.issueCertificate')}
+<button
+  onClick={() => navigate(getIssueCertificateRoute())}
+  className="btn-cta-primary"
+>
+  {t("nav.issueCertificate")}
 </button>
 ```
 
 #### B. Footer Link (Line ~381)
 
 **Before:**
+
 ```javascript
-<a href="/issue">{t('nav.issueCertificate')}</a>
+<a href="/issue">{t("nav.issueCertificate")}</a>
 ```
 
 **After:**
+
 ```javascript
-<a href="#" onClick={(e) => { e.preventDefault(); navigate(getIssueCertificateRoute()); }}>
-  {t('nav.issueCertificate')}
+<a
+  href="#"
+  onClick={(e) => {
+    e.preventDefault();
+    navigate(getIssueCertificateRoute());
+  }}
+>
+  {t("nav.issueCertificate")}
 </a>
 ```
 
 **Why the change:**
+
 - Converted from plain `<a>` tag to onClick handler
 - Prevents default link behavior with `e.preventDefault()`
 - Uses React Router's `navigate()` for proper SPA navigation
@@ -87,6 +104,7 @@ const getIssueCertificateRoute = () => {
 ## User Flow Examples
 
 ### Example 1: Guest User (Not Logged In)
+
 ```
 User on landing page
   ↓
@@ -99,6 +117,7 @@ After login as Student → /student-dashboard
 ```
 
 ### Example 2: Institute User (Logged In)
+
 ```
 Institute user on landing page
   ↓
@@ -110,6 +129,7 @@ Can immediately start issuing certificates
 ```
 
 ### Example 3: Student User (Logged In)
+
 ```
 Student on landing page
   ↓
@@ -121,6 +141,7 @@ Redirected to /student-dashboard
 ```
 
 ### Example 4: Company User (Logged In)
+
 ```
 Company user on landing page
   ↓
@@ -136,10 +157,12 @@ Redirected to /company-dashboard
 All "Issue Certificate" buttons/links on the landing page:
 
 1. ✅ **CTA Section** (Call-to-Action section near bottom)
+
    - Large primary button
    - Most prominent placement
 
 2. ✅ **Footer** (Company column)
+
    - Navigation link
    - Quick access from footer
 
@@ -150,32 +173,38 @@ All "Issue Certificate" buttons/links on the landing page:
 ## Benefits
 
 ✅ **Better Security**
-   - Prevents unauthorized access to issue certificate page
-   - Forces login before accessing protected features
+
+- Prevents unauthorized access to issue certificate page
+- Forces login before accessing protected features
 
 ✅ **Improved UX**
-   - Users guided to appropriate destination
-   - No dead-ends or error pages
-   - Clear path for different user types
+
+- Users guided to appropriate destination
+- No dead-ends or error pages
+- Clear path for different user types
 
 ✅ **Role-Based Access**
-   - Institutes → Issue page
-   - Students → Student dashboard
-   - Companies → Company dashboard
-   - Admins → Admin dashboard
+
+- Institutes → Issue page
+- Students → Student dashboard
+- Companies → Company dashboard
+- Admins → Admin dashboard
 
 ✅ **Consistent Behavior**
-   - All "Issue Certificate" buttons behave the same way
-   - Predictable navigation throughout the app
+
+- All "Issue Certificate" buttons behave the same way
+- Predictable navigation throughout the app
 
 ✅ **Prevents Confusion**
-   - Students/Companies won't see issue certificate page
-   - Redirected to their relevant section
-   - Better user experience
+
+- Students/Companies won't see issue certificate page
+- Redirected to their relevant section
+- Better user experience
 
 ## Testing Scenarios
 
 ### Test 1: Guest User
+
 ```bash
 Steps:
 1. Open landing page (not logged in)
@@ -187,6 +216,7 @@ Steps:
 ```
 
 ### Test 2: Institute User
+
 ```bash
 Steps:
 1. Login as Institute user
@@ -200,6 +230,7 @@ Steps:
 ```
 
 ### Test 3: Student User
+
 ```bash
 Steps:
 1. Login as Student
@@ -213,6 +244,7 @@ Steps:
 ```
 
 ### Test 4: Company User
+
 ```bash
 Steps:
 1. Login as Company
@@ -226,6 +258,7 @@ Steps:
 ```
 
 ### Test 5: Admin User
+
 ```bash
 Steps:
 1. Login as Admin
@@ -241,6 +274,7 @@ Steps:
 ## Related Components
 
 This enhancement works with:
+
 - **AuthContext** - Provides `user` object and authentication state
 - **React Router** - `navigate()` function for navigation
 - **getDashboardRoute()** - Helper function for dashboard routing

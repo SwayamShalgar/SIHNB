@@ -13,6 +13,7 @@ Implemented a robust certificate download functionality that allows users to dow
 Added `handleDownloadCertificate()` function with the following features:
 
 #### Key Features:
+
 - **Blob-based Download**: Fetches the PDF as a blob for better browser compatibility
 - **Error Handling**: Comprehensive try-catch with user-friendly error messages
 - **Dynamic URL Construction**: Works with both local and production environments
@@ -20,46 +21,49 @@ Added `handleDownloadCertificate()` function with the following features:
 - **Multilingual Support**: Error messages in all 7 supported languages
 
 #### Implementation:
+
 ```javascript
 const handleDownloadCertificate = async () => {
   try {
     if (!certificateData?.pdfUrl) {
-      alert(t('issue.downloadError') || 'PDF URL not available');
+      alert(t("issue.downloadError") || "PDF URL not available");
       return;
     }
 
     // Construct the full URL
-    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5001';
-    const pdfUrl = certificateData.pdfUrl.startsWith('http') 
-      ? certificateData.pdfUrl 
+    const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:5001";
+    const pdfUrl = certificateData.pdfUrl.startsWith("http")
+      ? certificateData.pdfUrl
       : `${apiUrl}${certificateData.pdfUrl}`;
 
     // Fetch the PDF as a blob
     const response = await fetch(pdfUrl);
-    
+
     if (!response.ok) {
-      throw new Error('Failed to download certificate');
+      throw new Error("Failed to download certificate");
     }
 
     const blob = await response.blob();
-    
+
     // Create a temporary URL for the blob
     const blobUrl = window.URL.createObjectURL(blob);
-    
+
     // Create a temporary anchor element and trigger download
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = blobUrl;
     link.download = `certificate_${certificateData.id}.pdf`;
     document.body.appendChild(link);
     link.click();
-    
+
     // Clean up
     document.body.removeChild(link);
     window.URL.revokeObjectURL(blobUrl);
-    
   } catch (error) {
-    console.error('Error downloading certificate:', error);
-    alert(t('issue.downloadError') || 'Failed to download certificate. Please try again.');
+    console.error("Error downloading certificate:", error);
+    alert(
+      t("issue.downloadError") ||
+        "Failed to download certificate. Please try again."
+    );
   }
 };
 ```
@@ -69,25 +73,24 @@ const handleDownloadCertificate = async () => {
 Changed from `<a>` tag to `<button>` with onClick handler:
 
 **Before:**
+
 ```javascript
-<a 
+<a
   href={certificateData.pdfUrl}
   download
   className="btn-download"
   target="_blank"
   rel="noopener noreferrer"
 >
-  {t('issue.downloadPdf')}
+  {t("issue.downloadPdf")}
 </a>
 ```
 
 **After:**
+
 ```javascript
-<button 
-  onClick={handleDownloadCertificate}
-  className="btn-download"
->
-  {t('issue.downloadPdf')}
+<button onClick={handleDownloadCertificate} className="btn-download">
+  {t("issue.downloadPdf")}
 </button>
 ```
 
@@ -95,17 +98,18 @@ Changed from `<a>` tag to `<button>` with onClick handler:
 
 Added `downloadError` translation in all 7 language files:
 
-| Language | Translation |
-|----------|------------|
-| **English (en)** | "Failed to download certificate. Please try again." |
-| **Hindi (hi)** | "प्रमाणपत्र डाउनलोड करने में विफल। कृपया पुनः प्रयास करें।" |
-| **Tamil (ta)** | "சான்றிதழை பதிவிறக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்" |
-| **Bengali (bn)** | "সার্টিফিকেট ডাউনলোড করতে ব্যর্থ। আবার চেষ্টা করুন।" |
-| **Telugu (te)** | "సర్టిఫికేట్ డౌన్‌లోడ్ చేయడంలో విఫలమైంది. మళ్లీ ప్రయత్నించండి।" |
-| **Marathi (mr)** | "प्रमाणपत्र डाउनलोड करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा." |
+| Language         | Translation                                                         |
+| ---------------- | ------------------------------------------------------------------- |
+| **English (en)** | "Failed to download certificate. Please try again."                 |
+| **Hindi (hi)**   | "प्रमाणपत्र डाउनलोड करने में विफल। कृपया पुनः प्रयास करें।"         |
+| **Tamil (ta)**   | "சான்றிதழை பதிவிறக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்"          |
+| **Bengali (bn)** | "সার্টিফিকেট ডাউনলোড করতে ব্যর্থ। আবার চেষ্টা করুন।"                |
+| **Telugu (te)**  | "సర్టిఫికేట్ డౌన్‌లోడ్ చేయడంలో విఫలమైంది. మళ్లీ ప్రయత్నించండి।"     |
+| **Marathi (mr)** | "प्रमाणपत्र डाउनलोड करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा."     |
 | **Spanish (es)** | "Error al descargar el certificado. Por favor, inténtelo de nuevo." |
 
 Also added missing keys:
+
 - `downloadPdf`
 - `viewCertificate`
 - `issueAnother`
@@ -117,8 +121,9 @@ Also added missing keys:
 The server already has the necessary configuration:
 
 **File:** `/server/index.js` (Line 20)
+
 ```javascript
-app.use('/certificates', express.static(path.join(__dirname, 'certificates')));
+app.use("/certificates", express.static(path.join(__dirname, "certificates")));
 ```
 
 This serves PDF files from the `server/certificates` directory.
@@ -128,16 +133,19 @@ This serves PDF files from the `server/certificates` directory.
 ### Download Flow:
 
 1. **User Issues Certificate**
+
    - Certificate is generated on the server
    - PDF is saved in `/server/certificates/` directory
    - Server returns `pdfUrl: '/certificates/certificate_[ID].pdf'`
 
 2. **Success Screen Displays**
+
    - Shows Certificate ID prominently
    - Shows QR code for verification
    - Shows Download PDF button
 
 3. **User Clicks Download**
+
    - `handleDownloadCertificate()` is triggered
    - Function constructs full URL (e.g., `http://localhost:5001/certificates/certificate_abc123.pdf`)
    - Fetches PDF as a blob using Fetch API
@@ -160,36 +168,43 @@ This serves PDF files from the `server/certificates` directory.
 ## Benefits
 
 ✅ **Cross-Browser Compatibility**
-   - Works on Chrome, Firefox, Safari, Edge
-   - Uses standard Fetch API and Blob API
+
+- Works on Chrome, Firefox, Safari, Edge
+- Uses standard Fetch API and Blob API
 
 ✅ **Proper File Naming**
-   - Downloads as `certificate_[ID].pdf`
-   - Easy to identify and organize
+
+- Downloads as `certificate_[ID].pdf`
+- Easy to identify and organize
 
 ✅ **Error Resilience**
-   - Handles network failures gracefully
-   - User-friendly error messages
-   - Console logging for debugging
+
+- Handles network failures gracefully
+- User-friendly error messages
+- Console logging for debugging
 
 ✅ **Clean Code**
-   - Proper cleanup of temporary resources
-   - No memory leaks from blob URLs
-   - Removes temporary DOM elements
+
+- Proper cleanup of temporary resources
+- No memory leaks from blob URLs
+- Removes temporary DOM elements
 
 ✅ **Multilingual Support**
-   - Error messages in 7 languages
-   - Consistent with rest of application
+
+- Error messages in 7 languages
+- Consistent with rest of application
 
 ✅ **Environment Flexibility**
-   - Works in development (localhost:5001)
-   - Works in production (uses REACT_APP_API_URL)
+
+- Works in development (localhost:5001)
+- Works in production (uses REACT_APP_API_URL)
 
 ## Testing
 
 ### Manual Testing Steps:
 
 1. **Issue a Certificate**
+
    ```
    - Login as Institute user
    - Navigate to Issue Certificate
@@ -198,6 +213,7 @@ This serves PDF files from the `server/certificates` directory.
    ```
 
 2. **Verify Success Screen**
+
    ```
    - Check Certificate ID is displayed
    - Check QR code is shown
@@ -205,6 +221,7 @@ This serves PDF files from the `server/certificates` directory.
    ```
 
 3. **Test Download**
+
    ```
    - Click "Download PDF" button
    - Verify browser initiates download
@@ -213,6 +230,7 @@ This serves PDF files from the `server/certificates` directory.
    ```
 
 4. **Test Error Handling**
+
    ```
    - Stop the server
    - Try to download
@@ -230,25 +248,32 @@ This serves PDF files from the `server/certificates` directory.
 ## Files Modified
 
 1. ✅ `/client/src/pages/IssueCertificate.js`
+
    - Added `handleDownloadCertificate()` function
    - Changed download button from `<a>` to `<button>`
 
 2. ✅ `/client/src/locales/en.json`
+
    - Added `downloadError` translation
 
 3. ✅ `/client/src/locales/hi.json`
+
    - Added `downloadError` and missing keys
 
 4. ✅ `/client/src/locales/ta.json`
+
    - Added `downloadError` and missing keys
 
 5. ✅ `/client/src/locales/bn.json`
+
    - Added `downloadError` and missing keys
 
 6. ✅ `/client/src/locales/te.json`
+
    - Added `downloadError` and missing keys
 
 7. ✅ `/client/src/locales/mr.json`
+
    - Added `downloadError` and missing keys
 
 8. ✅ `/client/src/locales/es.json`
@@ -259,6 +284,7 @@ This serves PDF files from the `server/certificates` directory.
 To configure the API URL for production:
 
 **`.env` file:**
+
 ```
 REACT_APP_API_URL=https://your-production-domain.com
 ```

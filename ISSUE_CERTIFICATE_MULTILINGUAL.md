@@ -7,6 +7,7 @@ The Issue Certificate page is now **fully multilingual**! All text content has b
 ## 🌍 What Was Implemented
 
 ### 1. **Language Switcher Integration**
+
 - ✅ Added `LanguageSwitcher` component to the navigation bar
 - ✅ Positioned alongside the "Back to Home" button
 - ✅ Fully functional with dropdown menu
@@ -16,6 +17,7 @@ The Issue Certificate page is now **fully multilingual**! All text content has b
 All UI elements are now translated, including:
 
 #### Form Elements:
+
 - ✅ Page title: "Issue New Certificate"
 - ✅ Page subtitle
 - ✅ Learner Name field (label + placeholder)
@@ -26,7 +28,9 @@ All UI elements are now translated, including:
 - ✅ Submit button states (normal + loading)
 
 #### Course Options (18 courses):
+
 All predefined courses are fully translated:
+
 1. Full Stack Web Development
 2. Data Science & Machine Learning
 3. Artificial Intelligence
@@ -47,6 +51,7 @@ All predefined courses are fully translated:
 18. Other (Specify Below)
 
 #### Success Screen:
+
 - ✅ Success message
 - ✅ Success description
 - ✅ Certificate ID label
@@ -58,9 +63,11 @@ All predefined courses are fully translated:
 - ✅ Issue Another button
 
 #### Navigation:
+
 - ✅ Back to Home button
 
 #### Error Messages:
+
 - ✅ Form validation errors
 - ✅ API error messages
 
@@ -133,6 +140,7 @@ All predefined courses are fully translated:
 ### File: `IssueCertificate.js`
 
 #### Before:
+
 ```javascript
 <h1>Issue New Certificate</h1>
 <label>Learner Name *</label>
@@ -140,6 +148,7 @@ All predefined courses are fully translated:
 ```
 
 #### After:
+
 ```javascript
 <h1>{t('issue.title')}</h1>
 <label>{t('issue.learnerName')} {t('issue.required')}</label>
@@ -149,11 +158,13 @@ All predefined courses are fully translated:
 ### Key Improvements:
 
 1. **Course Array Restructured**:
+
    - Changed from simple strings to objects with keys
    - Each course now has a translation key
    - Enables dynamic translation
 
 2. **Added LanguageSwitcher**:
+
    - Integrated into navigation bar
    - Styled to match the page design
 
@@ -171,6 +182,7 @@ All predefined courses are fully translated:
 ## 🌐 Languages Supported
 
 All 7 languages are fully implemented:
+
 - 🇬🇧 English
 - 🇮🇳 Hindi (हिंदी)
 - 🇮🇳 Tamil (தமிழ்)
@@ -182,11 +194,13 @@ All 7 languages are fully implemented:
 ## 🎨 UI/UX Features
 
 1. **Seamless Language Switching**
+
    - No page reload required
    - Instant updates
    - Preserves form data
 
 2. **Smart Course Selection**
+
    - Courses translate automatically
    - "Other" option detection works in any language
    - Custom course input appears only when needed
@@ -212,11 +226,13 @@ All 7 languages are fully implemented:
 ## 🚀 Next Steps (Optional Enhancements)
 
 1. **Add More Languages**
+
    - Kannada (ಕನ್ನಡ)
    - Gujarati (ગુજરાતી)
    - Malayalam (മലയാളം)
 
 2. **PDF Generation**
+
    - Generate certificates in selected language
    - Multi-language PDF support
 
@@ -235,6 +251,7 @@ All 7 languages are fully implemented:
 ## 🎉 Result
 
 The Issue Certificate page is now **100% multilingual**! Users can:
+
 - ✅ Switch languages seamlessly
 - ✅ See all content in their preferred language
 - ✅ Fill forms with translated labels and hints
