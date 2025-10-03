@@ -82,6 +82,50 @@ const testConnection = async () => {
   }
 };
 
+// Initialize courses table in PostgreSQL
+const initializeCoursesTable = async () => {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS courses (
+        id VARCHAR(255) PRIMARY KEY,
+        institute_id INTEGER NOT NULL,
+        course_code VARCHAR(50) NOT NULL,
+        course_name VARCHAR(255) NOT NULL,
+        course_description TEXT,
+        duration VARCHAR(50),
+        duration_unit VARCHAR(20),
+        level VARCHAR(50),
+        category VARCHAR(100),
+        credits VARCHAR(20),
+        instructor_name VARCHAR(255),
+        department VARCHAR(255),
+        prerequisites TEXT,
+        learning_outcomes TEXT,
+        status VARCHAR(20) DEFAULT 'active',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (institute_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // Create index for faster course queries by institute
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_courses_institute 
+      ON courses(institute_id)
+    `);
+
+    // Create index for course code queries
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_courses_code 
+      ON courses(course_code)
+    `);
+
+    console.log('✅ Courses table initialized successfully in PostgreSQL');
+  } catch (error) {
+    console.error('Error initializing courses table:', error);
+  }
+};
+
 // Initialize all tables on module load
 const initializeTables = async () => {
   const connected = await testConnection();
@@ -92,6 +136,7 @@ const initializeTables = async () => {
   
   await initializeUsersTable();
   await initializeCertificatesTable();
+  await initializeCoursesTable();
 };
 
 initializeTables();

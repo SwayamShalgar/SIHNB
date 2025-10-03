@@ -55,6 +55,42 @@ function initDatabase() {
         console.log('✅ Institutes table ready');
       }
     });
+
+    // Courses table
+    db.run(`
+      CREATE TABLE IF NOT EXISTS courses (
+        id TEXT PRIMARY KEY,
+        institute_id TEXT NOT NULL,
+        course_code TEXT NOT NULL,
+        course_name TEXT NOT NULL,
+        course_description TEXT,
+        duration TEXT,
+        duration_unit TEXT,
+        level TEXT,
+        category TEXT,
+        credits TEXT,
+        instructor_name TEXT,
+        department TEXT,
+        prerequisites TEXT,
+        learning_outcomes TEXT,
+        status TEXT DEFAULT 'active',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (institute_id) REFERENCES institutes(id)
+      )
+    `, (err) => {
+      if (err) {
+        console.error('Error creating courses table:', err.message);
+      } else {
+        console.log('✅ Courses table ready');
+      }
+    });
+
+    // Create index for faster course queries
+    db.run(`
+      CREATE INDEX IF NOT EXISTS idx_courses_institute 
+      ON courses(institute_id)
+    `);
   });
 }
 
