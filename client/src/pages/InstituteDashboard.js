@@ -1,0 +1,131 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Shield, LogOut, Award, Users, FileText, Plus, Eye } from 'lucide-react';
+import axios from 'axios';
+import '../styles/InstituteDashboard.css';
+
+const InstituteDashboard = () => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [certificates, setCertificates] = useState([]);
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+
+    if (!userData || !token) {
+      navigate('/login');
+      return;
+    }
+
+    const parsedUser = JSON.parse(userData);
+    if (parsedUser.role !== 'Institute') {
+      navigate('/login');
+      return;
+    }
+
+    setUser(parsedUser);
+    fetchCertificates();
+  }, [navigate]);
+
+  const fetchCertificates = async () => {
+    try {
+      const response = await axios.get('/api/certificates');
+      setCertificates(response.data.certificates || []);
+    } catch (error) {
+      console.error('Error fetching certificates:', error);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
+
+  if (!user) return <div className="loading">Loading...</div>;
+
+  return (
+    <div className="institute-dashboard">
+      <nav className="dashboard-navbar">
+        <div className="nav-container">
+          <div className="nav-logo">
+            <Shield className="logo-icon" />
+            <span className="logo-text">Certify Institute</span>
+          </div>
+          <div className="nav-actions">
+            <span className="user-info">{user.organization || user.email}</span>
+            <button onClick={handleLogout} className="btn-logout">
+              <LogOut size={20} />
+              Logout
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      <div className="dashboard-content">
+        <div className="welcome-section">
+          <h1>Welcome, {user.full_name || 'Institute'}</h1>
+          <p>Manage your institution's certificates</p>
+        </div>
+
+        <div className="stats-row">
+          <div className="stat-box">
+            <Award size={32} />
+            <div>
+              <h3>{certificates.length}</h3>
+              <p>Total Certificates</p>
+            </div>
+          </div>
+          <div className="stat-box">
+            <Users size={32} />
+            <div>
+              <h3>{new Set(certificates.map(c => c.learnerName)).size}</h3>
+              <p>Total Students</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="action-cards">
+          <div className="action-card primary" onClick={() => navigate('/issue')}>
+            <Plus size={48} />
+            <h3>Issue New Certificate</h3>
+            <p>Issue a blockchain-verified certificate</p>
+          </div>
+
+          <div className="action-card secondary" onClick={() => navigate('/dashboard')}>
+            <FileText size={48} />
+            <h3>View All Certificates</h3>
+            <p>Browse and manage issued certificates</p>
+          </div>
+
+          <div className="action-card tertiary" onClick={() => navigate('/verify')}>
+            <Eye size={48} />
+            <h3>Verify Certificate</h3>
+            <p>Verify any certificate authenticity</p>
+          </div>
+        </div>
+
+        <div className="recent-certificates">
+          <h2>Recently Issued Certificates</h2>
+          <div className="certificates-list">
+            {certificates.slice(0, 5).map(cert => (
+              <div key={cert.id} className="cert-item" onClick={() => navigate(`/certificate/${cert.id}`)}>
+                <div className="cert-icon">
+                  <Award size={24} />
+                </div>
+                <div className="cert-details">
+                  <h4>{cert.learnerName}</h4>
+                  <p>{cert.courseName}</p>
+                  <span className="cert-date">{new Date(cert.issueDate).toLocaleDateString()}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default InstituteDashboard;

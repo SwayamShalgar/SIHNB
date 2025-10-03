@@ -19,6 +19,9 @@ const LandingPage = () => {
             <a href="#features">Features</a>
             <a href="#how-it-works">How it Works</a>
             <a href="#benefits">Benefits</a>
+            <button onClick={() => navigate('/login')} className="btn-secondary">
+              Login
+            </button>
             <button onClick={() => navigate('/verify')} className="btn-secondary">
               Verify Certificate
             </button>

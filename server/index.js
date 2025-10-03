@@ -18,11 +18,14 @@ app.use('/certificates', express.static(path.join(__dirname, 'certificates')));
 // Import routes
 const certificateRoutes = require('./routes/certificates');
 const verificationRoutes = require('./routes/verification');
+const authRoutes = require('./routes/auth');
 
 // Initialize database
 const db = require('./database/init');
+const pgPool = require('./database/postgres');
 
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/certificates', certificateRoutes);
 app.use('/api/verify', verificationRoutes);
 
