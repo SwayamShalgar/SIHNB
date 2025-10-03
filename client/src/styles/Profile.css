@@ -3,6 +3,7 @@
   background: linear-gradient(180deg, #f8fafc 0%, #e0e7ff 50%, #f8fafc 100%);
   position: relative;
   overflow-x: hidden;
+  padding-top: 80px; /* Add space for fixed navbar */
 }
 
 .profile-page::before {

@@ -4,9 +4,14 @@
 }
 
 .dashboard-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   background: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 1rem 0;
+  z-index: 1000;
 }
 
 .nav-container {
@@ -68,9 +73,11 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+  padding-top: 100px; /* Space for fixed navbar */
 }
 
 .welcome-section {
+  padding-top: 40px;
   margin-bottom: 2rem;
 }
 
