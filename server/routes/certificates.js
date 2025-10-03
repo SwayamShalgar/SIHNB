@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { v4: uuidv4 } = require('uuid');
 const db = require('../database/init');
+const pool = require('../database/postgres');
 const certificateGenerator = require('../utils/certificateGenerator');
 const blockchainService = require('../blockchain/contract');
 const pinataService = require('../utils/pinataService');
@@ -83,7 +84,42 @@ router.post('/issue', async (req, res) => {
       };
     }
 
-    // Store in database
+    // Store in PostgreSQL database (Neon)
+    try {
+      console.log(`🔄 Attempting to store certificate ${certificateId} in PostgreSQL...`);
+      
+      const pgResult = await pool.query(
+        `INSERT INTO certificates (
+          id, learner_name, learner_email, course_name, 
+          institute_name, issue_date, certificate_hash, 
+          blockchain_tx_hash, pdf_path, qr_code, ipfs_hash, ipfs_url
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+        RETURNING id`,
+        [
+          certificateId,
+          learner_name,
+          learner_email || null,
+          course_name,
+          institute_name,
+          issue_date,
+          certificateHash,
+          blockchainResult.txHash,
+          pdfResult.filename,
+          pdfResult.qrCode,
+          ipfsResult.IpfsHash || null,
+          ipfsResult.ipfsUrl || null
+        ]
+      );
+
+      console.log(`✅ Certificate ${certificateId} stored in PostgreSQL (Neon) - Row affected`);
+      console.log(`📊 PostgreSQL Response:`, pgResult.rows[0]);
+    } catch (pgError) {
+      console.error('❌ PostgreSQL storage error:', pgError.message);
+      console.error('Full error:', pgError);
+      // Continue even if PostgreSQL fails - we'll still store in SQLite
+    }
+
+    // Also store in SQLite for backward compatibility
     const sql = `
       INSERT INTO certificates (
         id, learner_name, learner_email, course_name, 
@@ -107,9 +143,11 @@ router.post('/issue', async (req, res) => {
       ipfsResult.ipfsUrl || null
     ], function(err) {
       if (err) {
-        console.error('Database error:', err);
+        console.error('SQLite database error:', err);
         return res.status(500).json({ error: 'Failed to store certificate' });
       }
+
+      console.log(`✅ Certificate ${certificateId} stored in SQLite`);
 
       res.status(201).json({
         success: true,
@@ -134,56 +172,111 @@ router.post('/issue', async (req, res) => {
 });
 
 // Get certificate by ID
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const { id } = req.params;
 
-  const sql = 'SELECT * FROM certificates WHERE id = ?';
-  db.get(sql, [id], (err, row) => {
-    if (err) {
-      return res.status(500).json({ error: 'Database error' });
-    }
-    if (!row) {
-      return res.status(404).json({ error: 'Certificate not found' });
+  try {
+    // Try PostgreSQL first
+    const pgResult = await pool.query(
+      'SELECT * FROM certificates WHERE id = $1',
+      [id]
+    );
+
+    if (pgResult.rows.length > 0) {
+      const row = pgResult.rows[0];
+      return res.json({
+        certificate: {
+          id: row.id,
+          learnerName: row.learner_name,
+          learnerEmail: row.learner_email,
+          courseName: row.course_name,
+          instituteName: row.institute_name,
+          issueDate: row.issue_date,
+          hash: row.certificate_hash,
+          txHash: row.blockchain_tx_hash,
+          pdfUrl: `/certificates/${row.pdf_path}`,
+          qrCode: row.qr_code,
+          createdAt: row.created_at
+        }
+      });
     }
 
-    res.json({
-      certificate: {
+    // Fallback to SQLite if not found in PostgreSQL
+    const sql = 'SELECT * FROM certificates WHERE id = ?';
+    db.get(sql, [id], (err, row) => {
+      if (err) {
+        return res.status(500).json({ error: 'Database error' });
+      }
+      if (!row) {
+        return res.status(404).json({ error: 'Certificate not found' });
+      }
+
+      res.json({
+        certificate: {
+          id: row.id,
+          learnerName: row.learner_name,
+          learnerEmail: row.learner_email,
+          courseName: row.course_name,
+          instituteName: row.institute_name,
+          issueDate: row.issue_date,
+          hash: row.certificate_hash,
+          txHash: row.blockchain_tx_hash,
+          pdfUrl: `/certificates/${row.pdf_path}`,
+          qrCode: row.qr_code,
+          createdAt: row.created_at
+        }
+      });
+    });
+  } catch (error) {
+    console.error('Error fetching certificate:', error);
+    return res.status(500).json({ error: 'Database error' });
+  }
+});
+
+// Get all certificates (for institute dashboard)
+router.get('/', async (req, res) => {
+  try {
+    // Try PostgreSQL first
+    const pgResult = await pool.query(
+      'SELECT * FROM certificates ORDER BY created_at DESC LIMIT 100'
+    );
+
+    if (pgResult.rows.length > 0) {
+      const certificates = pgResult.rows.map(row => ({
         id: row.id,
         learnerName: row.learner_name,
         learnerEmail: row.learner_email,
         courseName: row.course_name,
         instituteName: row.institute_name,
         issueDate: row.issue_date,
-        hash: row.certificate_hash,
-        txHash: row.blockchain_tx_hash,
-        pdfUrl: `/certificates/${row.pdf_path}`,
-        qrCode: row.qr_code,
         createdAt: row.created_at
-      }
-    });
-  });
-});
+      }));
 
-// Get all certificates (for institute dashboard)
-router.get('/', (req, res) => {
-  const sql = 'SELECT * FROM certificates ORDER BY created_at DESC LIMIT 100';
-  
-  db.all(sql, [], (err, rows) => {
-    if (err) {
-      return res.status(500).json({ error: 'Database error' });
+      return res.json({ certificates });
     }
 
-    const certificates = rows.map(row => ({
-      id: row.id,
-      learnerName: row.learner_name,
-      courseName: row.course_name,
-      instituteName: row.institute_name,
-      issueDate: row.issue_date,
-      createdAt: row.created_at
-    }));
+    // Fallback to SQLite
+    const sql = 'SELECT * FROM certificates ORDER BY created_at DESC LIMIT 100';
+    db.all(sql, [], (err, rows) => {
+      if (err) {
+        return res.status(500).json({ error: 'Database error' });
+      }
 
-    res.json({ certificates });
-  });
+      const certificates = rows.map(row => ({
+        id: row.id,
+        learnerName: row.learner_name,
+        courseName: row.course_name,
+        instituteName: row.institute_name,
+        issueDate: row.issue_date,
+        createdAt: row.created_at
+      }));
+
+      res.json({ certificates });
+    });
+  } catch (error) {
+    console.error('Error fetching certificates:', error);
+    return res.status(500).json({ error: 'Database error' });
+  }
 });
 
 module.exports = router;
