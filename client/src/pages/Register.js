@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Shield, UserPlus, Mail, Lock, UserCircle, User, Building, Phone } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
+import { validateRegisterForm, sanitizeInput } from '../utils/validation';
 import '../styles/Register.css';
 
 const Register = () => {
@@ -17,16 +18,28 @@ const Register = () => {
     organization: '',
     phone: ''
   });
+  const [errors, setErrors] = useState({});
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const roles = ['Admin', 'Institute', 'Student', 'Company'];
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+    const sanitizedValue = name.includes('password') ? value : sanitizeInput(value);
+    
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: sanitizedValue
     });
+    
+    // Clear field-specific error when user types
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: ''
+      });
+    }
     setError('');
   };
 
@@ -34,10 +47,13 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setErrors({});
 
-    // Validate passwords match
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+    // Validate form
+    const validation = validateRegisterForm(formData);
+    if (!validation.isValid) {
+      setErrors(validation.errors);
+      setError('Please fix the errors below');
       setLoading(false);
       return;
     }
@@ -105,7 +121,9 @@ const Register = () => {
                 onChange={handleChange}
                 placeholder="Enter your full name"
                 required
+                className={errors.full_name ? 'input-error' : ''}
               />
+              {errors.full_name && <span className="field-error">{errors.full_name}</span>}
             </div>
 
             <div className="form-group">
@@ -138,9 +156,11 @@ const Register = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Enter your email"
+              placeholder="user@example.com"
               required
+              className={errors.email ? 'input-error' : ''}
             />
+            {errors.email && <span className="field-error">{errors.email}</span>}
           </div>
 
           <div className="form-row">
@@ -156,7 +176,9 @@ const Register = () => {
                 value={formData.organization}
                 onChange={handleChange}
                 placeholder="Your organization/institute"
+                className={errors.organization ? 'input-error' : ''}
               />
+              {errors.organization && <span className="field-error">{errors.organization}</span>}
             </div>
 
             <div className="form-group">
@@ -171,7 +193,9 @@ const Register = () => {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="Your phone number"
+                className={errors.phone ? 'input-error' : ''}
               />
+              {errors.phone && <span className="field-error">{errors.phone}</span>}
             </div>
           </div>
 
@@ -187,10 +211,11 @@ const Register = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Create a password"
+                placeholder="Create a password (min 6 chars)"
                 required
-                minLength="6"
+                className={errors.password ? 'input-error' : ''}
               />
+              {errors.password && <span className="field-error">{errors.password}</span>}
             </div>
 
             <div className="form-group">
@@ -206,8 +231,9 @@ const Register = () => {
                 onChange={handleChange}
                 placeholder="Confirm your password"
                 required
-                minLength="6"
+                className={errors.confirmPassword ? 'input-error' : ''}
               />
+              {errors.confirmPassword && <span className="field-error">{errors.confirmPassword}</span>}
             </div>
           </div>
 

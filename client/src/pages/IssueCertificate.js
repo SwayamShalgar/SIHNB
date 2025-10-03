@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shield, ArrowLeft, Award, Calendar, Building2, User, Loader } from 'lucide-react';
 import axios from 'axios';
+import { validateCertificateForm, sanitizeInput } from '../utils/validation';
 import '../styles/IssueCertificate.css';
 
 const IssueCertificate = () => {
@@ -9,6 +10,7 @@ const IssueCertificate = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [certificateData, setCertificateData] = useState(null);
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     learner_name: '',
     learner_email: '',
@@ -20,6 +22,15 @@ const IssueCertificate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setErrors({});
+
+    // Validate form
+    const validation = validateCertificateForm(formData);
+    if (!validation.isValid) {
+      setErrors(validation.errors);
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await axios.post('/api/certificates/issue', formData);
@@ -27,22 +38,34 @@ const IssueCertificate = () => {
       setSuccess(true);
     } catch (error) {
       console.error('Error issuing certificate:', error);
-      alert('Failed to issue certificate. Please try again.');
+      alert(error.response?.data?.error || 'Failed to issue certificate. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+    const sanitizedValue = sanitizeInput(value);
+    
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: sanitizedValue
     });
+    
+    // Clear field-specific error when user types
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: ''
+      });
+    }
   };
 
   const handleReset = () => {
     setSuccess(false);
     setCertificateData(null);
+    setErrors({});
     setFormData({
       learner_name: '',
       learner_email: '',
@@ -91,21 +114,26 @@ const IssueCertificate = () => {
                   onChange={handleChange}
                   placeholder="Enter learner's full name"
                   required
+                  className={errors.learner_name ? 'input-error' : ''}
                 />
+                {errors.learner_name && <span className="field-error">{errors.learner_name}</span>}
               </div>
 
               <div className="form-group">
                 <label>
                   <User size={18} />
-                  Learner Email
+                  Learner Email *
                 </label>
                 <input
                   type="email"
                   name="learner_email"
                   value={formData.learner_email}
                   onChange={handleChange}
-                  placeholder="learner@example.com (optional)"
+                  placeholder="learner@example.com"
+                  required
+                  className={errors.learner_email ? 'input-error' : ''}
                 />
+                {errors.learner_email && <span className="field-error">{errors.learner_email}</span>}
               </div>
 
               <div className="form-group">
@@ -120,7 +148,9 @@ const IssueCertificate = () => {
                   onChange={handleChange}
                   placeholder="Enter course name"
                   required
+                  className={errors.course_name ? 'input-error' : ''}
                 />
+                {errors.course_name && <span className="field-error">{errors.course_name}</span>}
               </div>
 
               <div className="form-group">
@@ -133,9 +163,12 @@ const IssueCertificate = () => {
                   name="institute_name"
                   value={formData.institute_name}
                   onChange={handleChange}
-                  placeholder="Enter institute name"
+                  placeholder="Enter institute name (letters only)"
                   required
+                  className={errors.institute_name ? 'input-error' : ''}
                 />
+                {errors.institute_name && <span className="field-error">{errors.institute_name}</span>}
+                <small className="field-hint">Only letters, spaces, hyphens, and periods allowed</small>
               </div>
 
               <div className="form-group">
@@ -148,8 +181,11 @@ const IssueCertificate = () => {
                   name="issue_date"
                   value={formData.issue_date}
                   onChange={handleChange}
+                  max={new Date().toISOString().split('T')[0]}
                   required
+                  className={errors.issue_date ? 'input-error' : ''}
                 />
+                {errors.issue_date && <span className="field-error">{errors.issue_date}</span>}
               </div>
 
               <button type="submit" className="btn-submit" disabled={loading}>

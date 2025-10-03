@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Shield, LogIn, Mail, Lock, UserCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
+import { validateLoginForm, sanitizeInput } from '../utils/validation';
 import '../styles/Login.css';
 
 const Login = () => {
@@ -13,16 +14,28 @@ const Login = () => {
     password: '',
     role: 'Student'
   });
+  const [errors, setErrors] = useState({});
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const roles = ['Admin', 'Institute', 'Student', 'Company'];
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+    const sanitizedValue = name === 'password' ? value : sanitizeInput(value);
+    
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: sanitizedValue
     });
+    
+    // Clear field-specific error when user types
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: ''
+      });
+    }
     setError('');
   };
 
@@ -30,6 +43,16 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setErrors({});
+
+    // Validate form
+    const validation = validateLoginForm(formData);
+    if (!validation.isValid) {
+      setErrors(validation.errors);
+      setError('Please fix the errors below');
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await axios.post('/api/auth/login', formData);
@@ -84,9 +107,11 @@ const Login = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Enter your email"
+              placeholder="user@example.com"
               required
+              className={errors.email ? 'input-error' : ''}
             />
+            {errors.email && <span className="field-error">{errors.email}</span>}
           </div>
 
           <div className="form-group">
@@ -102,7 +127,9 @@ const Login = () => {
               onChange={handleChange}
               placeholder="Enter your password"
               required
+              className={errors.password ? 'input-error' : ''}
             />
+            {errors.password && <span className="field-error">{errors.password}</span>}
           </div>
 
           <div className="form-group">
