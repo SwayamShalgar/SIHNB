@@ -38,17 +38,38 @@ router.post('/register', async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Determine if verification is needed (Company and Institute require admin approval)
+    const requiresVerification = ['Company', 'Institute'].includes(role);
+    const verifiedStatus = !requiresVerification; // Admin and Student are auto-verified
+
     // Insert new user
     const result = await pool.query(
-      `INSERT INTO users (email, password, role, full_name, organization, phone) 
-       VALUES ($1, $2, $3, $4, $5, $6) 
-       RETURNING id, email, role, full_name, organization, phone, created_at`,
-      [email, hashedPassword, role, full_name || null, organization || null, phone || null]
+      `INSERT INTO users (email, password, role, full_name, organization, phone, verified) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7) 
+       RETURNING id, email, role, full_name, organization, phone, verified, created_at`,
+      [email, hashedPassword, role, full_name || null, organization || null, phone || null, verifiedStatus]
     );
 
     const user = result.rows[0];
 
-    // Generate JWT token
+    // If user requires verification, return pending status (no token)
+    if (requiresVerification) {
+      return res.status(202).json({
+        success: true,
+        pending: true,
+        message: `Registration submitted successfully! Your ${role} account is pending admin approval. You will be able to login once an administrator verifies your account.`,
+        user: {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          full_name: user.full_name,
+          organization: user.organization,
+          verified: false
+        }
+      });
+    }
+
+    // For Admin and Student, generate token and allow immediate login
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       JWT_SECRET,
@@ -102,6 +123,15 @@ router.post('/login', async (req, res) => {
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
       return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Check if account is verified (for Company and Institute)
+    if (['Company', 'Institute'].includes(user.role) && user.verified === false) {
+      return res.status(403).json({ 
+        error: 'Account pending verification',
+        message: `Your ${user.role} account is pending admin approval. Please wait for an administrator to verify your account before logging in.`,
+        pending: true
+      });
     }
 
     // Generate JWT token

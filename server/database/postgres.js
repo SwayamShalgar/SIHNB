@@ -19,10 +19,21 @@ const initializeUsersTable = async () => {
         full_name VARCHAR(255),
         organization VARCHAR(255),
         phone VARCHAR(50),
+        verified BOOLEAN DEFAULT TRUE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
+
+    // Add verified column if it doesn't exist (for existing databases)
+    try {
+      await pool.query(`
+        ALTER TABLE users 
+        ADD COLUMN IF NOT EXISTS verified BOOLEAN DEFAULT TRUE
+      `);
+    } catch (alterError) {
+      // Column might already exist, ignore error
+    }
 
     console.log('✅ Users table initialized successfully');
   } catch (error) {

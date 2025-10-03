@@ -72,7 +72,12 @@ const Login = () => {
         navigate(dashboardPaths[response.data.user.role]);
       }
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed. Please try again.');
+      // Handle pending approval status
+      if (err.response?.data?.pending) {
+        setError(err.response.data.message || 'Your account is pending admin approval.');
+      } else {
+        setError(err.response?.data?.error || err.response?.data?.message || 'Login failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

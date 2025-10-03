@@ -16,12 +16,14 @@ const AdminDashboard = () => {
     totalCertificates: 0
   });
   const [users, setUsers] = useState([]);
+  const [pendingUsers, setPendingUsers] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('All');
   const [selectedUser, setSelectedUser] = useState(null);
   const [userActivity, setUserActivity] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeSection, setActiveSection] = useState('overview'); // 'overview' or 'verifications'
 
   const fetchStats = useCallback(async () => {
     if (!token) {
@@ -73,16 +75,37 @@ const AdminDashboard = () => {
     }
   }, [token, logout, navigate]);
 
+  const fetchPendingUsers = useCallback(async () => {
+    if (!token) {
+      console.log('No token available for fetchPendingUsers');
+      return;
+    }
+    try {
+      console.log('Fetching pending users with token:', token.substring(0, 20) + '...');
+      const response = await axios.get('/api/admin/pending-users', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      console.log('Pending users response:', response.data);
+      console.log('Number of pending users:', response.data?.length);
+      setPendingUsers(response.data || []);
+    } catch (error) {
+      console.error('Error fetching pending users:', error);
+      console.error('Error response:', error.response?.data);
+    }
+  }, [token]);
+
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      await Promise.all([fetchStats(), fetchUsers()]);
+      await Promise.all([fetchStats(), fetchUsers(), fetchPendingUsers()]);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
-  }, [fetchStats, fetchUsers]);
+  }, [fetchStats, fetchUsers, fetchPendingUsers]);
 
   useEffect(() => {
     if (!isAuthenticated() || user?.role !== 'Admin') {
@@ -133,6 +156,45 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleApproveUser = async (userId, userName) => {
+    if (!window.confirm(`Approve ${userName}? This will allow them to login.`)) {
+      return;
+    }
+
+    try {
+      await axios.post(`/api/admin/approve-user/${userId}`, {}, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      alert(`${userName} has been approved successfully!`);
+      // Refresh both lists
+      await Promise.all([fetchPendingUsers(), fetchUsers()]);
+    } catch (error) {
+      console.error('Error approving user:', error);
+      alert('Failed to approve user');
+    }
+  };
+
+  const handleRejectUser = async (userId, userName) => {
+    if (!window.confirm(`Reject and delete ${userName}? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      await axios.post(`/api/admin/reject-user/${userId}`, {}, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      alert(`${userName} has been rejected and removed.`);
+      fetchPendingUsers();
+    } catch (error) {
+      console.error('Error rejecting user:', error);
+      alert('Failed to reject user');
+    }
+  };
+
   const handleLogout = () => {
     logout();
     navigate('/');
@@ -175,71 +237,72 @@ const AdminDashboard = () => {
         <div className="welcome-section">
           <h1>Welcome, Administrator</h1>
           <p>Manage and oversee the entire Certify platform</p>
-          <button 
-            onClick={() => {
-              console.log('Manual refresh triggered');
-              console.log('Current token:', token ? 'Available' : 'Missing');
-              console.log('Current user:', user);
-              fetchData();
-            }}
-            style={{
-              marginTop: '10px',
-              padding: '10px 20px',
-              background: '#667eea',
-              color: 'white',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: 'pointer'
-            }}
-          >
-            🔄 Refresh Data (Debug)
-          </button>
-        </div>
-
-        <div className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-icon students">
-              <Users size={32} />
-            </div>
-            <div className="stat-info">
-              <h3>Students</h3>
-              <p className="stat-number">{stats.totalStudents}</p>
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-icon institutes">
-              <FileText size={32} />
-            </div>
-            <div className="stat-info">
-              <h3>Institutes</h3>
-              <p className="stat-number">{stats.totalInstitutes}</p>
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-icon companies">
-              <BarChart size={32} />
-            </div>
-            <div className="stat-info">
-              <h3>Companies</h3>
-              <p className="stat-number">{stats.totalCompanies}</p>
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-icon certificates">
-              <Award size={32} />
-            </div>
-            <div className="stat-info">
-              <h3>Certificates</h3>
-              <p className="stat-number">{stats.totalCertificates}</p>
-            </div>
+          
+          {/* Navigation Tabs */}
+          <div className="section-tabs">
+            <button 
+              className={activeSection === 'overview' ? 'tab-active' : ''}
+              onClick={() => setActiveSection('overview')}
+            >
+              📊 Dashboard Overview
+            </button>
+            <button 
+              className={activeSection === 'verifications' ? 'tab-active' : ''}
+              onClick={() => setActiveSection('verifications')}
+            >
+              ⏳ Pending Verifications {pendingUsers.length > 0 && (
+                <span className="badge-count">{pendingUsers.length}</span>
+              )}
+            </button>
           </div>
         </div>
 
-        {/* User Management Section */}
-        <div className="user-management-section">
+        {activeSection === 'overview' ? (
+          <>
+            <div className="stats-grid">
+              <div className="stat-card">
+                <div className="stat-icon students">
+                  <Users size={32} />
+                </div>
+                <div className="stat-info">
+                  <h3>Students</h3>
+                  <p className="stat-number">{stats.totalStudents}</p>
+                </div>
+              </div>
+
+              <div className="stat-card">
+                <div className="stat-icon institutes">
+                  <FileText size={32} />
+                </div>
+                <div className="stat-info">
+                  <h3>Institutes</h3>
+                  <p className="stat-number">{stats.totalInstitutes}</p>
+                </div>
+              </div>
+
+              <div className="stat-card">
+                <div className="stat-icon companies">
+                  <BarChart size={32} />
+                </div>
+                <div className="stat-info">
+                  <h3>Companies</h3>
+                  <p className="stat-number">{stats.totalCompanies}</p>
+                </div>
+              </div>
+
+              <div className="stat-card">
+                <div className="stat-icon certificates">
+                  <Award size={32} />
+                </div>
+                <div className="stat-info">
+                  <h3>Certificates</h3>
+                  <p className="stat-number">{stats.totalCertificates}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* User Management Section */}
+            <div className="user-management-section">
           <div className="section-header">
             <h2>User Management</h2>
             <p>View and manage all platform users</p>
@@ -349,29 +412,111 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Recent Activity Section */}
-        {recentActivity.length > 0 && (
-          <div className="recent-activity-section">
-            <h2>Recent Activity</h2>
-            <div className="activity-list">
-              {recentActivity.map((activity, index) => (
-                <div key={index} className="activity-item">
-                  <Activity size={20} />
-                  <div className="activity-details">
-                    <p>
-                      <strong>{activity.full_name || activity.email}</strong> 
-                      <span className={`role-badge ${activity.role.toLowerCase()}`}>
-                        {activity.role}
-                      </span>
-                      earned a certificate
-                    </p>
-                    <p className="activity-meta">
-                      {activity.course_name} • {new Date(activity.created_at).toLocaleString()}
-                    </p>
-                  </div>
+            {/* Recent Activity Section */}
+            {recentActivity.length > 0 && (
+              <div className="recent-activity-section">
+                <h2>Recent Activity</h2>
+                <div className="activity-list">
+                  {recentActivity.map((activity, index) => (
+                    <div key={index} className="activity-item">
+                      <Activity size={20} />
+                      <div className="activity-details">
+                        <p>
+                          <strong>{activity.full_name || activity.email}</strong> 
+                          <span className={`role-badge ${activity.role.toLowerCase()}`}>
+                            {activity.role}
+                          </span>
+                          earned a certificate
+                        </p>
+                        <p className="activity-meta">
+                          {activity.course_name} • {new Date(activity.created_at).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+            )}
+          </>
+        ) : (
+          /* Pending Verifications Section */
+          <div className="verifications-section">
+            <div className="section-header">
+              <h2>⏳ Pending Verifications</h2>
+              <p>Review and approve Company & Institute registrations</p>
             </div>
+
+            {pendingUsers.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon">✓</div>
+                <h3>All Caught Up!</h3>
+                <p>There are no pending user verifications at this time.</p>
+              </div>
+            ) : (
+              <div className="pending-users-table-container">
+                <table className="pending-users-table">
+                  <thead>
+                    <tr>
+                      <th>User Details</th>
+                      <th>Role</th>
+                      <th>Organization</th>
+                      <th>Contact</th>
+                      <th>Registered</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pendingUsers.map(u => (
+                      <tr key={u.id}>
+                        <td>
+                          <div className="user-cell">
+                            <div className="user-avatar pending">
+                              {(u.full_name || u.email).charAt(0).toUpperCase()}
+                            </div>
+                            <div className="user-details">
+                              <div className="user-name">{u.full_name || 'N/A'}</div>
+                              <div className="user-email">{u.email}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <span className={`role-badge ${u.role.toLowerCase()}`}>
+                            {u.role}
+                          </span>
+                        </td>
+                        <td>{u.organization || 'N/A'}</td>
+                        <td>{u.phone || 'N/A'}</td>
+                        <td>
+                          <div className="time-ago">
+                            {new Date(u.created_at).toLocaleDateString()}
+                            <br />
+                            <small>{new Date(u.created_at).toLocaleTimeString()}</small>
+                          </div>
+                        </td>
+                        <td>
+                          <div className="approval-actions">
+                            <button 
+                              className="btn-approve"
+                              onClick={() => handleApproveUser(u.id, u.full_name || u.email)}
+                              title="Approve and activate account"
+                            >
+                              ✓ Approve
+                            </button>
+                            <button 
+                              className="btn-reject"
+                              onClick={() => handleRejectUser(u.id, u.full_name || u.email)}
+                              title="Reject and delete account"
+                            >
+                              ✗ Reject
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         )}
       </div>

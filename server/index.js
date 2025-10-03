@@ -6,6 +6,10 @@ const path = require('path');
 // Load environment variables from server/.env
 dotenv.config({ path: path.join(__dirname, '.env') });
 
+// Debug: Check if Pinata credentials are loaded
+console.log('🔑 Pinata API Key loaded:', process.env.PINATA_API_KEY ? 'Yes ✓' : 'No ✗');
+console.log('🔑 Pinata API Secret loaded:', process.env.PINATA_API_SECRET ? 'Yes ✓' : 'No ✗');
+
 const app = express();
 const PORT = process.env.PORT || 5001;
 

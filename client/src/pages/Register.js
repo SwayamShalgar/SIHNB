@@ -21,6 +21,8 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [pendingApproval, setPendingApproval] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const roles = ['Admin', 'Institute', 'Student', 'Company'];
 
@@ -69,18 +71,34 @@ const Register = () => {
       });
       
       if (response.data.success) {
-        // Use AuthContext to store token and user info
-        login(response.data.user, response.data.token);
+        // Check if account requires admin approval
+        if (response.data.pending) {
+          setPendingApproval(true);
+          setSuccessMessage(response.data.message);
+          // Clear form
+          setFormData({
+            email: '',
+            password: '',
+            confirmPassword: '',
+            role: 'Student',
+            full_name: '',
+            organization: '',
+            phone: ''
+          });
+        } else {
+          // For Admin and Student, login immediately
+          login(response.data.user, response.data.token);
 
-        // Redirect based on role
-        const dashboardPaths = {
-          Admin: '/admin-dashboard',
-          Institute: '/institute-dashboard',
-          Student: '/student-dashboard',
-          Company: '/company-dashboard'
-        };
+          // Redirect based on role
+          const dashboardPaths = {
+            Admin: '/admin-dashboard',
+            Institute: '/institute-dashboard',
+            Student: '/student-dashboard',
+            Company: '/company-dashboard'
+          };
 
-        navigate(dashboardPaths[response.data.user.role]);
+          navigate(dashboardPaths[response.data.user.role]);
+        }
       }
     } catch (err) {
       setError(err.response?.data?.error || 'Registration failed. Please try again.');
@@ -100,12 +118,39 @@ const Register = () => {
           <p className="register-subtitle">Create your account</p>
         </div>
 
-        <form className="register-form" onSubmit={handleSubmit}>
-          {error && (
-            <div className="error-message">
-              <span>{error}</span>
+        {pendingApproval ? (
+          <div className="pending-approval-container">
+            <div className="success-icon">✓</div>
+            <h2>Registration Submitted!</h2>
+            <p className="success-message">{successMessage}</p>
+            <div className="info-box">
+              <p><strong>What happens next?</strong></p>
+              <ul>
+                <li>An administrator will review your registration</li>
+                <li>You'll receive notification once approved</li>
+                <li>After approval, you can login with your credentials</li>
+              </ul>
             </div>
-          )}
+            <button 
+              className="btn-register" 
+              onClick={() => navigate('/login')}
+              style={{ marginTop: '20px' }}
+            >
+              Go to Login
+            </button>
+          </div>
+        ) : (
+          <form className="register-form" onSubmit={handleSubmit}>
+            {error && (
+              <div className="error-message">
+                <span>{error}</span>
+              </div>
+            )}
+            {successMessage && !error && (
+              <div className="success-message-banner">
+                <span>{successMessage}</span>
+              </div>
+            )}
 
           <div className="form-row">
             <div className="form-group">
@@ -252,11 +297,14 @@ const Register = () => {
             )}
           </button>
         </form>
+        )}
 
-        <div className="register-footer">
-          <p>Already have an account? <span onClick={() => navigate('/login')} className="link">Login here</span></p>
-          <p className="back-home" onClick={() => navigate('/')}>← Back to Home</p>
-        </div>
+        {!pendingApproval && (
+          <div className="register-footer">
+            <p>Already have an account? <span onClick={() => navigate('/login')} className="link">Login here</span></p>
+            <p className="back-home" onClick={() => navigate('/')}>← Back to Home</p>
+          </div>
+        )}
       </div>
     </div>
   );

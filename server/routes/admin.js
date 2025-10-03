@@ -231,4 +231,134 @@ router.patch('/users/:id/role', authenticateToken, authorizeRole('Admin'), async
   }
 });
 
+// Get pending user verifications (Admin only)
+router.get('/pending-users', authenticateToken, authorizeRole('Admin'), async (req, res) => {
+  try {
+    // Try PostgreSQL first
+    try {
+      const result = await pool.query(`
+        SELECT 
+          id, 
+          email, 
+          role, 
+          full_name, 
+          organization, 
+          phone, 
+          created_at,
+          verified
+        FROM users
+        WHERE verified = FALSE AND role IN ('Company', 'Institute')
+        ORDER BY created_at DESC
+      `);
+
+      res.json(result.rows);
+    } catch (pgError) {
+      console.error('PostgreSQL query failed:', pgError.message);
+      
+      // Fallback to SQLite
+      const sql = `
+        SELECT 
+          id, 
+          email, 
+          role, 
+          full_name, 
+          organization, 
+          phone, 
+          created_at,
+          verified
+        FROM users
+        WHERE verified = 0 AND role IN ('Company', 'Institute')
+        ORDER BY created_at DESC
+      `;
+
+      db.all(sql, [], (err, rows) => {
+        if (err) {
+          console.error('SQLite error:', err);
+          return res.status(500).json({ error: 'Failed to fetch pending users' });
+        }
+        res.json(rows);
+      });
+    }
+  } catch (error) {
+    console.error('Error fetching pending users:', error);
+    res.status(500).json({ error: 'Failed to fetch pending users' });
+  }
+});
+
+// Approve user (Admin only)
+router.post('/approve-user/:id', authenticateToken, authorizeRole('Admin'), async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Try PostgreSQL first
+    try {
+      await pool.query(
+        'UPDATE users SET verified = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1',
+        [id]
+      );
+      
+      res.json({ 
+        success: true, 
+        message: 'User approved successfully' 
+      });
+    } catch (pgError) {
+      console.error('PostgreSQL update failed:', pgError.message);
+      
+      // Fallback to SQLite
+      const sql = 'UPDATE users SET verified = 1 WHERE id = ?';
+      db.run(sql, [id], function(err) {
+        if (err) {
+          console.error('SQLite error:', err);
+          return res.status(500).json({ error: 'Failed to approve user' });
+        }
+        res.json({ 
+          success: true, 
+          message: 'User approved successfully' 
+        });
+      });
+    }
+  } catch (error) {
+    console.error('Error approving user:', error);
+    res.status(500).json({ error: 'Failed to approve user' });
+  }
+});
+
+// Reject user (Admin only)
+router.post('/reject-user/:id', authenticateToken, authorizeRole('Admin'), async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Try PostgreSQL first
+    try {
+      await pool.query(
+        'DELETE FROM users WHERE id = $1 AND verified = FALSE',
+        [id]
+      );
+      
+      res.json({ 
+        success: true, 
+        message: 'User rejected and removed from system' 
+      });
+    } catch (pgError) {
+      console.error('PostgreSQL delete failed:', pgError.message);
+      
+      // Fallback to SQLite
+      const sql = 'DELETE FROM users WHERE id = ? AND verified = 0';
+      db.run(sql, [id], function(err) {
+        if (err) {
+          console.error('SQLite error:', err);
+          return res.status(500).json({ error: 'Failed to reject user' });
+        }
+        res.json({ 
+          success: true, 
+          message: 'User rejected and removed from system' 
+        });
+      });
+    }
+  } catch (error) {
+    console.error('Error rejecting user:', error);
+    res.status(500).json({ error: 'Failed to reject user' });
+  }
+});
+
 module.exports = router;
