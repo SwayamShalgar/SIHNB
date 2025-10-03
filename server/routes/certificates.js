@@ -11,6 +11,9 @@ const path = require('path');
 // Issue a new certificate
 router.post('/issue', async (req, res) => {
   try {
+    console.log('📝 Certificate issuance request received');
+    console.log('Request body:', req.body);
+    
     const { learner_name, learner_email, course_name, institute_name, issue_date } = req.body;
 
     // Validation
@@ -47,7 +50,10 @@ router.post('/issue', async (req, res) => {
     // Upload to IPFS (Pinata)
     let ipfsResult;
     try {
+      console.log('📤 Starting IPFS upload to Pinata...');
       const pdfPath = path.join(__dirname, '../certificates', pdfResult.filename);
+      console.log(`📁 PDF Path: ${pdfPath}`);
+      
       ipfsResult = await pinataService.uploadFile(pdfPath, {
         name: `certificate-${certificateId}.pdf`,
         certificateId: certificateId,
@@ -56,7 +62,11 @@ router.post('/issue', async (req, res) => {
         issueDate: issue_date
       });
 
+      console.log(`✅ PDF uploaded to IPFS! Hash: ${ipfsResult.IpfsHash}`);
+      console.log(`🔗 IPFS URL: ${ipfsResult.ipfsUrl}`);
+
       // Also upload metadata as JSON
+      console.log('📤 Uploading metadata JSON to Pinata...');
       const metadataJson = {
         certificateId,
         learnerName: learner_name,
@@ -69,13 +79,20 @@ router.post('/issue', async (req, res) => {
         createdAt: new Date().toISOString()
       };
 
-      await pinataService.uploadJSON(metadataJson, {
+      const jsonResult = await pinataService.uploadJSON(metadataJson, {
         name: `certificate-metadata-${certificateId}.json`,
         certificateId: certificateId
       });
 
+      console.log(`✅ Metadata JSON uploaded! Hash: ${jsonResult.IpfsHash}`);
+
     } catch (error) {
-      console.error('IPFS upload failed:', error);
+      console.error('❌ IPFS upload failed:', error);
+      console.error('Error details:', error.message);
+      if (error.response) {
+        console.error('Response status:', error.response.status);
+        console.error('Response data:', error.response.data);
+      }
       ipfsResult = { 
         success: false, 
         mock: true,
@@ -113,42 +130,8 @@ router.post('/issue', async (req, res) => {
 
       console.log(`✅ Certificate ${certificateId} stored in PostgreSQL (Neon) - Row affected`);
       console.log(`📊 PostgreSQL Response:`, pgResult.rows[0]);
-    } catch (pgError) {
-      console.error('❌ PostgreSQL storage error:', pgError.message);
-      console.error('Full error:', pgError);
-      // Continue even if PostgreSQL fails - we'll still store in SQLite
-    }
 
-    // Also store in SQLite for backward compatibility
-    const sql = `
-      INSERT INTO certificates (
-        id, learner_name, learner_email, course_name, 
-        institute_name, issue_date, certificate_hash, 
-        blockchain_tx_hash, pdf_path, qr_code, ipfs_hash, ipfs_url
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-
-    db.run(sql, [
-      certificateId,
-      learner_name,
-      learner_email || null,
-      course_name,
-      institute_name,
-      issue_date,
-      certificateHash,
-      blockchainResult.txHash,
-      pdfResult.filename,
-      pdfResult.qrCode,
-      ipfsResult.IpfsHash || null,
-      ipfsResult.ipfsUrl || null
-    ], function(err) {
-      if (err) {
-        console.error('SQLite database error:', err);
-        return res.status(500).json({ error: 'Failed to store certificate' });
-      }
-
-      console.log(`✅ Certificate ${certificateId} stored in SQLite`);
-
+      // Send success response immediately after PostgreSQL storage
       res.status(201).json({
         success: true,
         message: 'Certificate issued successfully',
@@ -164,7 +147,45 @@ router.post('/issue', async (req, res) => {
           verifyUrl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify/${certificateId}`
         }
       });
-    });
+
+      // Also try to store in SQLite for backward compatibility (async, don't wait)
+      const sql = `
+        INSERT INTO certificates (
+          id, learner_name, learner_email, course_name, 
+          institute_name, issue_date, certificate_hash, 
+          blockchain_tx_hash, pdf_path, qr_code, ipfs_hash, ipfs_url
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+
+      db.run(sql, [
+        certificateId,
+        learner_name,
+        learner_email || null,
+        course_name,
+        institute_name,
+        issue_date,
+        certificateHash,
+        blockchainResult.txHash,
+        pdfResult.filename,
+        pdfResult.qrCode,
+        ipfsResult.IpfsHash || null,
+        ipfsResult.ipfsUrl || null
+      ], function(err) {
+        if (err) {
+          console.error('⚠️  SQLite storage failed (not critical):', err.message);
+        } else {
+          console.log(`✅ Certificate ${certificateId} also stored in SQLite`);
+        }
+      });
+
+    } catch (pgError) {
+      console.error('❌ PostgreSQL storage error:', pgError.message);
+      console.error('Full error:', pgError);
+      return res.status(500).json({ 
+        error: 'Failed to store certificate in database',
+        details: pgError.message 
+      });
+    }
   } catch (error) {
     console.error('Error issuing certificate:', error);
     res.status(500).json({ error: 'Failed to issue certificate' });
