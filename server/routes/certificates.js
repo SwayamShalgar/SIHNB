@@ -32,17 +32,40 @@ router.post('/issue', async (req, res) => {
     // Generate certificate hash
     const certificateHash = certificateGenerator.generateCertificateHash(certificateData);
 
-    // Store on blockchain
-    let blockchainResult;
-    try {
-      blockchainResult = await blockchainService.storeCertificateHash(certificateHash);
-    } catch (error) {
-      console.error('Blockchain storage failed:', error);
-      blockchainResult = { success: true, txHash: 'pending', mock: true };
-    }
-
-    // Generate PDF and QR code
+    // Generate PDF and QR code first (fast)
     const pdfResult = await certificateGenerator.generatePDF(certificateData, certificateId);
+
+    // Store on blockchain (async - don't wait for confirmation)
+    let blockchainResult = { 
+      success: true, 
+      txHash: 'pending', 
+      mock: false,
+      message: 'Transaction submitted, waiting for confirmation'
+    };
+    
+    // Start blockchain storage in background
+    blockchainService.storeCertificateHash(certificateHash)
+      .then(async (result) => {
+        console.log(`✅ Blockchain confirmed for certificate ${certificateId}: ${result.txHash}`);
+        
+        // Update database with confirmed TX hash
+        try {
+          await pool.query(
+            'UPDATE certificates SET blockchain_tx_hash = $1 WHERE id = $2',
+            [result.txHash, certificateId]
+          );
+          
+          db.run(
+            'UPDATE certificates SET blockchain_tx_hash = ? WHERE id = ?',
+            [result.txHash, certificateId]
+          );
+        } catch (updateError) {
+          console.error('Failed to update TX hash:', updateError);
+        }
+      })
+      .catch(error => {
+        console.error(`❌ Blockchain storage failed for ${certificateId}:`, error.message);
+      });
 
     // Upload to IPFS (Pinata)
     let ipfsResult;

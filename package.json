@@ -8,13 +8,46 @@
     "server": "nodemon server/index.js",
     "client": "cd client && npm start",
     "install-all": "npm install && cd client && npm install && cd ../server && npm install",
-    "build": "cd client && npm run build"
+    "build": "cd client && npm run build",
+    "check-config": "node scripts/checkConfig.js",
+    "compile": "npx hardhat compile",
+    "deploy:sepolia": "npx hardhat run scripts/deploy.js --network sepolia",
+    "deploy:mumbai": "npx hardhat run scripts/deploy.js --network mumbai"
   },
-  "keywords": ["blockchain", "certificates", "verification"],
+  "keywords": [
+    "blockchain",
+    "certificates",
+    "verification",
+    "ethereum",
+    "sepolia"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
     "concurrently": "^8.2.2",
+    "dotenv": "^17.2.3",
     "nodemon": "^3.0.1"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.1.0",
+    "@nomicfoundation/hardhat-ethers": "^3.1.0",
+    "@nomicfoundation/hardhat-ignition": "^0.15.13",
+    "@nomicfoundation/hardhat-ignition-ethers": "^0.15.14",
+    "@nomicfoundation/hardhat-network-helpers": "^1.1.0",
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@nomicfoundation/hardhat-verify": "^2.1.0",
+    "@nomicfoundation/ignition-core": "^0.15.13",
+    "@typechain/ethers-v6": "^0.5.0",
+    "@typechain/hardhat": "^9.0.0",
+    "@types/chai": "^4.2.0",
+    "@types/mocha": "^10.0.10",
+    "chai": "^4.2.0",
+    "ethers": "^6.14.0",
+    "hardhat": "^2.22.0",
+    "hardhat-gas-reporter": "^2.3.0",
+    "solidity-coverage": "^0.8.1",
+    "ts-node": "^10.9.2",
+    "typechain": "^8.3.0",
+    "typescript": "^5.9.3"
   }
 }
