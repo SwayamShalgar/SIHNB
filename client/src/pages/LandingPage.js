@@ -1,17 +1,37 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Award, CheckCircle, Users, Building2, Search, ChevronRight, Sparkles } from 'lucide-react';
+import { Shield, Award, CheckCircle, Users, Building2, Search, ChevronRight, Sparkles, LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import '../styles/LandingPage.css';
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+  const getDashboardRoute = () => {
+    if (!user) return '/login';
+    
+    const dashboardRoutes = {
+      Admin: '/admin-dashboard',
+      Institute: '/institute-dashboard',
+      Student: '/student-dashboard',
+      Company: '/company-dashboard'
+    };
+    
+    return dashboardRoutes[user.role] || '/login';
+  };
 
   return (
     <div className="landing-page">
       {/* Navigation */}
       <nav className="navbar">
         <div className="nav-container">
-          <div className="nav-logo">
+          <div className="nav-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
             <Shield className="logo-icon" />
             <span className="logo-text">Certify</span>
           </div>
@@ -19,15 +39,44 @@ const LandingPage = () => {
             <a href="#features">Features</a>
             <a href="#how-it-works">How it Works</a>
             <a href="#benefits">Benefits</a>
-            <button onClick={() => navigate('/login')} className="btn-secondary">
-              Login
-            </button>
+            
+            {/* Verify Certificate - Available to all */}
             <button onClick={() => navigate('/verify')} className="btn-secondary">
               Verify Certificate
             </button>
-            <button onClick={() => navigate('/issue')} className="btn-primary">
-              Issue Certificate
-            </button>
+
+            {/* Conditional Navigation based on authentication and role */}
+            {isAuthenticated() ? (
+              <>
+                {/* Show Issue Certificate only for Institute role */}
+                {user?.role === 'Institute' && (
+                  <button onClick={() => navigate('/issue')} className="btn-primary">
+                    Issue Certificate
+                  </button>
+                )}
+                
+                {/* Show Dashboard for logged-in users */}
+                <button onClick={() => navigate(getDashboardRoute())} className="btn-secondary">
+                  Dashboard
+                </button>
+                
+                {/* Logout button */}
+                <button onClick={handleLogout} className="btn-logout-nav">
+                  <LogOut size={18} />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                {/* Show Login and Register for non-authenticated users */}
+                <button onClick={() => navigate('/login')} className="btn-secondary">
+                  Login
+                </button>
+                <button onClick={() => navigate('/register')} className="btn-primary">
+                  Register
+                </button>
+              </>
+            )}
           </div>
         </div>
       </nav>

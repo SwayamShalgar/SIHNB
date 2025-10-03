@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shield, LogOut, Users, FileText, BarChart, Settings, Award } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import '../styles/AdminDashboard.css';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const { user, isAuthenticated, logout } = useAuth();
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalCertificates: 0,
@@ -15,23 +16,13 @@ const AdminDashboard = () => {
   });
 
   useEffect(() => {
-    const userData = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
-
-    if (!userData || !token) {
+    if (!isAuthenticated() || user?.role !== 'Admin') {
       navigate('/login');
       return;
     }
 
-    const parsedUser = JSON.parse(userData);
-    if (parsedUser.role !== 'Admin') {
-      navigate('/login');
-      return;
-    }
-
-    setUser(parsedUser);
     fetchStats();
-  }, [navigate]);
+  }, [navigate, isAuthenticated, user]);
 
   const fetchStats = async () => {
     // Mock stats - you can implement actual API calls
@@ -44,9 +35,8 @@ const AdminDashboard = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
+    logout();
+    navigate('/');
   };
 
   if (!user) return <div className="loading">Loading...</div>;

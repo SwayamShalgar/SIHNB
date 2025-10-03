@@ -1,33 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shield, LogOut, Search, Award, Eye, Users, Building, CheckCircle } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import '../styles/CompanyDashboard.css';
 
 const CompanyDashboard = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const { user, isAuthenticated, logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [verificationResult, setVerificationResult] = useState(null);
   const [verifiedCount, setVerifiedCount] = useState(0);
 
   useEffect(() => {
-    const userData = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
-
-    if (!userData || !token) {
+    if (!isAuthenticated() || user?.role !== 'Company') {
       navigate('/login');
       return;
     }
-
-    const parsedUser = JSON.parse(userData);
-    if (parsedUser.role !== 'Company') {
-      navigate('/login');
-      return;
-    }
-
-    setUser(parsedUser);
-  }, [navigate]);
+  }, [navigate, isAuthenticated, user]);
 
   const handleVerify = async (e) => {
     e.preventDefault();
@@ -48,9 +38,8 @@ const CompanyDashboard = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
+    logout();
+    navigate('/');
   };
 
   if (!user) return <div className="loading">Loading...</div>;

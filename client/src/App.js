@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -14,22 +15,24 @@ import CompanyDashboard from './pages/CompanyDashboard';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/issue" element={<IssueCertificate />} />
-        <Route path="/verify" element={<VerifyCertificate />} />
-        <Route path="/verify/:id" element={<ViewCertificate />} />
-        <Route path="/certificate/:id" element={<ViewCertificate />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        <Route path="/institute-dashboard" element={<InstituteDashboard />} />
-        <Route path="/student-dashboard" element={<StudentDashboard />} />
-        <Route path="/company-dashboard" element={<CompanyDashboard />} />
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/issue" element={<IssueCertificate />} />
+          <Route path="/verify" element={<VerifyCertificate />} />
+          <Route path="/verify/:id" element={<ViewCertificate />} />
+          <Route path="/certificate/:id" element={<ViewCertificate />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/institute-dashboard" element={<InstituteDashboard />} />
+          <Route path="/student-dashboard" element={<StudentDashboard />} />
+          <Route path="/company-dashboard" element={<CompanyDashboard />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 

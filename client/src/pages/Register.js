@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shield, UserPlus, Mail, Lock, UserCircle, User, Building, Phone } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import '../styles/Register.css';
 
 const Register = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -51,9 +53,8 @@ const Register = () => {
       });
       
       if (response.data.success) {
-        // Store token and user info
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        // Use AuthContext to store token and user info
+        login(response.data.user, response.data.token);
 
         // Redirect based on role
         const dashboardPaths = {

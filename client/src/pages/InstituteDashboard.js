@@ -1,32 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shield, LogOut, Award, Users, FileText, Plus, Eye } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import '../styles/InstituteDashboard.css';
 
 const InstituteDashboard = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const { user, isAuthenticated, logout } = useAuth();
   const [certificates, setCertificates] = useState([]);
 
   useEffect(() => {
-    const userData = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
-
-    if (!userData || !token) {
+    if (!isAuthenticated() || user?.role !== 'Institute') {
       navigate('/login');
       return;
     }
 
-    const parsedUser = JSON.parse(userData);
-    if (parsedUser.role !== 'Institute') {
-      navigate('/login');
-      return;
-    }
-
-    setUser(parsedUser);
     fetchCertificates();
-  }, [navigate]);
+  }, [navigate, isAuthenticated, user]);
 
   const fetchCertificates = async () => {
     try {
@@ -38,9 +29,8 @@ const InstituteDashboard = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
+    logout();
+    navigate('/');
   };
 
   if (!user) return <div className="loading">Loading...</div>;
