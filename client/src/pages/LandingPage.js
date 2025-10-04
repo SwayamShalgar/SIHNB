@@ -76,6 +76,15 @@ const LandingPage = () => {
             <a href="#features">{t('nav.features')}</a>
             <a href="#how-it-works">{t('nav.howItWorks')}</a>
             <a href="#benefits">{t('nav.benefits')}</a>
+            <a 
+              href="https://www.digilocker.gov.in/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="digilocker-link-highlight"
+            >
+              <Sparkles size={14} />
+              DigiLocker
+            </a>
           </div>
 
           <div className="nav-actions-centered">
