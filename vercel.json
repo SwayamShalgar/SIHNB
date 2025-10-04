@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "installCommand": "npm install --legacy-peer-deps",
   "builds": [
     {
       "src": "client/package.json",
@@ -30,6 +31,5 @@
       "src": "/(.*)",
       "dest": "client/build/index.html"
     }
-  ],
-  "installCommand": "npm install --prefix client --legacy-peer-deps && npm install --prefix server"
+  ]
 }
