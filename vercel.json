@@ -19,8 +19,17 @@
       "dest": "server/index.js"
     },
     {
-      "src": "/(.*)",
+      "src": "/static/(.*)",
+      "dest": "client/build/static/$1"
+    },
+    {
+      "src": "/(.*\\.(ico|png|jpg|jpeg|svg|css|js))",
       "dest": "client/build/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "client/build/index.html"
     }
-  ]
+  ],
+  "installCommand": "npm install --prefix client --legacy-peer-deps && npm install --prefix server"
 }
