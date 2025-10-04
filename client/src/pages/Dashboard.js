@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Shield, ArrowLeft, Award, Search, Calendar, Building2 } from 'lucide-react';
+import { Shield, ArrowLeft, Award, Search, Building2 } from 'lucide-react';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import axios from 'axios';
 import '../styles/Dashboard.css';

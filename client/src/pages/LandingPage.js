@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { 
   Shield, Award, CheckCircle, Users, Building2, Search, 
-  ArrowRight, Sparkles, LogOut, UserCircle, Zap, Lock, Globe 
+  ArrowRight, Sparkles, LogOut, Zap, Globe 
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import LanguageSwitcher from '../components/LanguageSwitcher';
@@ -15,7 +15,6 @@ const LandingPage = () => {
   const { t } = useTranslation();
   const { user, isAuthenticated, logout } = useAuth();
   const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchStats();
@@ -36,8 +35,6 @@ const LandingPage = () => {
           verified: '100%'
         }
       });
-    } finally {
-      setLoading(false);
     }
   };
 
