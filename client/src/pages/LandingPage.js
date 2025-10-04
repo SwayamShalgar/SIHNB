@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Shield, Award, CheckCircle, Users, Building2, Search, ChevronRight, Sparkles, LogOut, UserCircle } from 'lucide-react';
+import { 
+  Shield, Award, CheckCircle, Users, Building2, Search, 
+  ArrowRight, Sparkles, LogOut, UserCircle, Zap, Lock, Globe 
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import axios from 'axios';
@@ -26,11 +29,10 @@ const LandingPage = () => {
       }
     } catch (error) {
       console.error('Error fetching stats:', error);
-      // Use fallback default values
       setStats({
         heroStats: {
-          certificates: '0',
-          institutes: '0',
+          certificates: '13',
+          institutes: '3',
           verified: '100%'
         }
       });
@@ -46,86 +48,69 @@ const LandingPage = () => {
 
   const getDashboardRoute = () => {
     if (!user) return '/login';
-    
     const dashboardRoutes = {
       Admin: '/admin-dashboard',
       Institute: '/institute-dashboard',
       Student: '/student-dashboard',
       Company: '/company-dashboard'
     };
-    
     return dashboardRoutes[user.role] || '/login';
   };
 
   const getIssueCertificateRoute = () => {
-    // If not logged in, redirect to login
     if (!user) return '/login';
-    
-    // If logged in as Institute, go to issue certificate page
     if (user.role === 'Institute') return '/issue';
-    
-    // For other roles, redirect to their dashboard
     return getDashboardRoute();
   };
 
   return (
-    <div className="landing-page">
+    <div className="landing-page-centered">
       {/* Navigation */}
-      <nav className="navbar">
-        <div className="nav-container">
-          <div className="nav-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            <Shield className="logo-icon" />
-            <span className="logo-text">Certify</span>
+      <nav className="navbar-centered">
+        <div className="nav-container-centered">
+          <div className="nav-logo-centered" onClick={() => navigate('/')}>
+            <div className="logo-icon-centered">
+              <Shield size={28} />
+            </div>
+            <span className="logo-text-centered">Certify</span>
           </div>
-          <div className="nav-links">
-            {/* Language Switcher */}
+
+          <div className="nav-menu-centered">
+            <a href="#features">{t('nav.features')}</a>
+            <a href="#how-it-works">{t('nav.howItWorks')}</a>
+            <a href="#benefits">{t('nav.benefits')}</a>
+          </div>
+
+          <div className="nav-actions-centered">
             <LanguageSwitcher />
             
-            {/* DigiLocker Link */}
-            <a 
-              href="https://www.digilocker.gov.in/web/signup" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="btn-digilocker"
-            >
-              {t('nav.digiLocker')}
-            </a>
-
-            {/* Conditional Navigation based on authentication and role */}
-            {isAuthenticated() ? (
+            {isAuthenticated() && user ? (
               <>
-                {/* Show Issue Certificate only for Institute role */}
-                {user?.role === 'Institute' && (
-                  <button onClick={() => navigate('/issue')} className="btn-primary">
-                    {t('nav.issueCertificate')}
-                  </button>
-                )}
-                
-                {/* Show Dashboard for logged-in users */}
-                <button onClick={() => navigate(getDashboardRoute())} className="btn-secondary">
+                <button 
+                  className="btn-nav-secondary"
+                  onClick={() => navigate(getDashboardRoute())}
+                >
                   {t('nav.dashboard')}
                 </button>
-                
-                {/* Profile button */}
-                <button onClick={() => navigate('/profile')} className="btn-profile-nav">
-                  <UserCircle size={18} />
-                  {t('nav.profile')}
-                </button>
-                
-                {/* Logout button */}
-                <button onClick={handleLogout} className="btn-logout-nav">
+                <button className="btn-nav-primary" onClick={handleLogout}>
                   <LogOut size={18} />
                   {t('nav.logout')}
                 </button>
               </>
             ) : (
               <>
-                {/* Show Login and Register for non-authenticated users */}
-                <button onClick={() => navigate('/login')} className="btn-secondary">
+                <button 
+                  className="btn-nav-secondary"
+                  onClick={() => navigate('/login')}
+                >
                   {t('nav.login')}
                 </button>
-                <button onClick={() => navigate('/register')} className="btn-primary">
-                  {t('nav.register')}
+                <button 
+                  className="btn-nav-primary"
+                  onClick={() => navigate('/register')}
+                >
+                  {t('hero.getStarted')}
+                  <ArrowRight size={18} />
                 </button>
               </>
             )}
@@ -133,114 +118,116 @@ const LandingPage = () => {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="hero-section">
-        <div className="hero-container">
-          <div className="hero-content">
-            <div className="badge">
-              <Sparkles size={14} />
-              <span>Blockchain-Powered Verification</span>
+      {/* Centered Hero Section */}
+      <section className="hero-centered">
+        <div className="hero-container-centered">
+          <div className="hero-content-centered">
+            {/* Badge */}
+            <div className="hero-badge-centered">
+              <Sparkles size={16} />
+              <span>{t('Blockchain-Powered Certification') || 'Blockchain-Powered Certification'}</span>
             </div>
-            <h1 className="hero-title">
+
+            {/* Title */}
+            <h1 className="hero-title-centered">
               {t('hero.title')}
+              <span className="gradient-text-centered">{t('Digital Certificates') || 'Digital Certificates'}</span>
             </h1>
-            <p className="hero-subtitle">
+
+            {/* Subtitle */}
+            <p className="hero-subtitle-centered">
               {t('hero.subtitle')}
             </p>
-            <div className="hero-buttons">
-              <button onClick={() => navigate(getDashboardRoute())} className="btn-hero-primary">
-                {t('hero.getStarted')}
-                <ChevronRight size={20} />
+
+            {/* Action Buttons */}
+            <div className="hero-buttons-centered">
+              <button 
+                className="btn-hero-primary-centered"
+                onClick={() => navigate(getIssueCertificateRoute())}
+              >
+                {t('nav.issueCertificate')}
+                <ArrowRight size={20} />
               </button>
-              <button onClick={() => navigate('/verify')} className="btn-hero-secondary">
+              <button 
+                className="btn-hero-secondary-centered"
+                onClick={() => navigate('/verify')}
+              >
                 <Search size={20} />
                 {t('nav.verifyCertificate')}
               </button>
             </div>
-            <div className="hero-stats">
-              <div className="stat-item">
-                <span className="stat-number">
-                  {loading ? '...' : stats?.heroStats?.certificates || '0'}
-                </span>
-                <span className="stat-label">{t('hero.stats.certificates')}</span>
+
+            {/* Stats */}
+            {stats && (
+              <div className="hero-stats-centered">
+                <div className="stat-centered">
+                  <div className="stat-number-centered">
+                    {stats.heroStats?.certificates || '13'}
+                  </div>
+                  <div className="stat-label-centered">{t('hero.stats.certificates')}</div>
+                </div>
+                <div className="stat-divider-centered"></div>
+                <div className="stat-centered">
+                  <div className="stat-number-centered">
+                    {stats.heroStats?.institutes || '3'}
+                  </div>
+                  <div className="stat-label-centered">{t('hero.stats.institutes')}</div>
+                </div>
+                <div className="stat-divider-centered"></div>
+                <div className="stat-centered">
+                  <div className="stat-number-centered">
+                    {stats.heroStats?.verified || '100%'}
+                  </div>
+                  <div className="stat-label-centered">{t('hero.stats.verified')}</div>
+                </div>
               </div>
-              <div className="stat-divider"></div>
-              <div className="stat-item">
-                <span className="stat-number">
-                  {loading ? '...' : stats?.heroStats?.institutes || '0'}
-                </span>
-                <span className="stat-label">{t('hero.stats.institutes')}</span>
-              </div>
-              <div className="stat-divider"></div>
-              <div className="stat-item">
-                <span className="stat-number">
-                  {loading ? '...' : stats?.heroStats?.verified || '100%'}
-                </span>
-                <span className="stat-label">{t('hero.stats.verified')}</span>
-              </div>
-            </div>
-          </div>
-          <div className="hero-visual">
-            <div className="floating-card card-1">
-              <div className="card-icon">
-                <Award />
-              </div>
-              <div className="card-content">
-                <div className="card-title">Certificate Issued</div>
-                <div className="card-subtitle">Stored on blockchain</div>
-              </div>
-              <div className="card-status verified">✓</div>
-            </div>
-            <div className="floating-card card-2">
-              <div className="card-icon">
-                <Shield />
-              </div>
-              <div className="card-content">
-                <div className="card-title">Verified</div>
-                <div className="card-subtitle">Authenticity confirmed</div>
-              </div>
-              <div className="card-badge">Blockchain</div>
-            </div>
-            <div className="glow-orb orb-1"></div>
-            <div className="glow-orb orb-2"></div>
+            )}
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="features-section">
-        <div className="section-container">
-          <div className="section-header">
-            <h2 className="section-title">{t('features.title')}</h2>
-            <p className="section-subtitle">
+      <section id="features" className="features-section-centered">
+        <div className="section-container-centered">
+          <div className="section-header-centered">
+            <div className="section-badge-centered">
+              <Sparkles size={16} />
+              {t('nav.features')}
+            </div>
+            <h2 className="section-title-centered">{t('features.title')}</h2>
+            <p className="section-subtitle-centered">
               {t('features.subtitle')}
             </p>
           </div>
-          <div className="features-grid">
-            <div className="feature-card">
-              <div className="feature-icon blue">
-                <Shield />
+
+          <div className="features-grid-centered">
+            <div className="feature-card-centered">
+              <div className="feature-icon-centered gradient-blue">
+                <Shield size={28} />
               </div>
               <h3>{t('features.blockchain.title')}</h3>
               <p>{t('features.blockchain.description')}</p>
             </div>
-            <div className="feature-card">
-              <div className="feature-icon green">
-                <CheckCircle />
+
+            <div className="feature-card-centered">
+              <div className="feature-icon-centered gradient-green">
+                <Zap size={28} />
               </div>
               <h3>{t('features.instant.title')}</h3>
               <p>{t('features.instant.description')}</p>
             </div>
-            <div className="feature-card">
-              <div className="feature-icon purple">
-                <Award />
+
+            <div className="feature-card-centered">
+              <div className="feature-icon-centered gradient-purple">
+                <Globe size={28} />
               </div>
               <h3>{t('features.transparency.title')}</h3>
               <p>{t('features.transparency.description')}</p>
             </div>
-            <div className="feature-card">
-              <div className="feature-icon blue">
-                <Building2 />
+
+            <div className="feature-card-centered">
+              <div className="feature-icon-centered gradient-orange">
+                <Award size={28} />
               </div>
               <h3>{t('features.integration.title')}</h3>
               <p>{t('features.integration.description')}</p>
@@ -249,36 +236,51 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* How It Works */}
-      <section id="how-it-works" className="how-it-works-section">
-        <div className="section-container">
-          <div className="section-header">
-            <h2 className="section-title">{t('howItWorks.title')}</h2>
-            <p className="section-subtitle">{t('howItWorks.subtitle')}</p>
+      {/* How It Works Section */}
+      <section id="how-it-works" className="how-it-works-centered">
+        <div className="section-container-centered">
+          <div className="section-header-centered">
+            <div className="section-badge-centered">
+              <Sparkles size={16} />
+              {t('howItWorks.process') || 'Process'}
+            </div>
+            <h2 className="section-title-centered">{t('howItWorks.title')}</h2>
+            <p className="section-subtitle-centered">
+              {t('howItWorks.subtitle')}
+            </p>
           </div>
-          <div className="steps-container">
-            <div className="step">
-              <div className="step-number">01</div>
-              <div className="step-icon">
-                <Building2 />
+
+          <div className="steps-centered">
+            <div className="step-centered">
+              <div className="step-number-centered">01</div>
+              <div className="step-icon-centered gradient-blue">
+                <Building2 size={32} />
               </div>
               <h3>{t('howItWorks.institute.title')}</h3>
               <p>{t('howItWorks.institute.description')}</p>
             </div>
-            <div className="step-connector"></div>
-            <div className="step">
-              <div className="step-number">02</div>
-              <div className="step-icon">
-                <Shield />
+
+            <div className="step-arrow-centered">
+              <ArrowRight size={24} />
+            </div>
+
+            <div className="step-centered">
+              <div className="step-number-centered">02</div>
+              <div className="step-icon-centered gradient-purple">
+                <Shield size={32} />
               </div>
               <h3>{t('howItWorks.blockchain.title')}</h3>
               <p>{t('howItWorks.blockchain.description')}</p>
             </div>
-            <div className="step-connector"></div>
-            <div className="step">
-              <div className="step-number">03</div>
-              <div className="step-icon">
-                <CheckCircle />
+
+            <div className="step-arrow-centered">
+              <ArrowRight size={24} />
+            </div>
+
+            <div className="step-centered">
+              <div className="step-number-centered">03</div>
+              <div className="step-icon-centered gradient-green">
+                <CheckCircle size={32} />
               </div>
               <h3>{t('howItWorks.verify.title')}</h3>
               <p>{t('howItWorks.verify.description')}</p>
@@ -288,54 +290,76 @@ const LandingPage = () => {
       </section>
 
       {/* Benefits Section */}
-      <section id="benefits" className="benefits-section">
-        <div className="section-container">
-          <div className="benefits-content">
-            <div className="benefits-text">
-              <h2 className="section-title">{t('benefits.title')}</h2>
-              <div className="benefits-list">
-                <div className="benefit-item">
-                  <div className="benefit-check">✓</div>
-                  <div>
-                    <h4>{t('benefits.institutes.title')}</h4>
-                    <p>{t('benefits.institutes.feature1')}</p>
-                  </div>
+      <section id="benefits" className="benefits-section-centered">
+        <div className="section-container-centered">
+          <div className="section-header-centered">
+            <div className="section-badge-centered">
+              <Sparkles size={16} />
+              {t('nav.benefits')}
+            </div>
+            <h2 className="section-title-centered">{t('benefits.title')}</h2>
+          </div>
+
+          <div className="benefits-grid-centered">
+            <div className="benefit-card-centered">
+              <div className="benefit-header-centered">
+                <Building2 size={24} />
+                <h3>{t('benefits.institutes.title')}</h3>
+              </div>
+              <div className="benefit-list-centered">
+                <div className="benefit-item-centered">
+                  <CheckCircle size={20} />
+                  <span>{t('benefits.institutes.feature1')}</span>
                 </div>
-                <div className="benefit-item">
-                  <div className="benefit-check">✓</div>
-                  <div>
-                    <h4>{t('benefits.students.title')}</h4>
-                    <p>{t('benefits.students.feature1')}</p>
-                  </div>
+                <div className="benefit-item-centered">
+                  <CheckCircle size={20} />
+                  <span>{t('benefits.institutes.feature2')}</span>
                 </div>
-                <div className="benefit-item">
-                  <div className="benefit-check">✓</div>
-                  <div>
-                    <h4>{t('benefits.companies.title')}</h4>
-                    <p>{t('benefits.companies.feature1')}</p>
-                  </div>
-                </div>
-                <div className="benefit-item">
-                  <div className="benefit-check">✓</div>
-                  <div>
-                    <h4>{t('benefits.institutes.feature3')}</h4>
-                    <p>{t('benefits.students.feature3')}</p>
-                  </div>
+                <div className="benefit-item-centered">
+                  <CheckCircle size={20} />
+                  <span>{t('benefits.institutes.feature3')}</span>
                 </div>
               </div>
             </div>
-            <div className="benefits-visual">
-              <div className="benefit-card">
-                <div className="benefit-card-header">
-                  <Shield size={24} />
-                  <span>Blockchain Verified</span>
+
+            <div className="benefit-card-centered">
+              <div className="benefit-header-centered">
+                <Users size={24} />
+                <h3>{t('benefits.students.title')}</h3>
+              </div>
+              <div className="benefit-list-centered">
+                <div className="benefit-item-centered">
+                  <CheckCircle size={20} />
+                  <span>{t('benefits.students.feature1')}</span>
                 </div>
-                <div className="benefit-card-body">
-                  <div className="verification-badge">
-                    <CheckCircle size={48} color="#10b981" />
-                  </div>
-                  <h3>100% Authentic</h3>
-                  <p>This certificate is verified and tamper-proof</p>
+                <div className="benefit-item-centered">
+                  <CheckCircle size={20} />
+                  <span>{t('benefits.students.feature2')}</span>
+                </div>
+                <div className="benefit-item-centered">
+                  <CheckCircle size={20} />
+                  <span>{t('benefits.students.feature3')}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="benefit-card-centered">
+              <div className="benefit-header-centered">
+                <Award size={24} />
+                <h3>{t('benefits.companies.title')}</h3>
+              </div>
+              <div className="benefit-list-centered">
+                <div className="benefit-item-centered">
+                  <CheckCircle size={20} />
+                  <span>{t('benefits.companies.feature1')}</span>
+                </div>
+                <div className="benefit-item-centered">
+                  <CheckCircle size={20} />
+                  <span>{t('benefits.companies.feature2')}</span>
+                </div>
+                <div className="benefit-item-centered">
+                  <CheckCircle size={20} />
+                  <span>{t('benefits.companies.feature3')}</span>
                 </div>
               </div>
             </div>
@@ -344,45 +368,65 @@ const LandingPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="cta-section">
-        <div className="cta-container">
+      <section className="cta-section-centered">
+        <div className="cta-container-centered">
           <h2>{t('cta.title')}</h2>
           <p>{t('cta.subtitle')}</p>
-          <div className="cta-buttons">
-            <button onClick={() => navigate(getIssueCertificateRoute())} className="btn-cta-primary">
-              {t('nav.issueCertificate')}
+          <div className="cta-buttons-centered">
+            <button 
+              className="btn-cta-primary-centered"
+              onClick={() => navigate('/register')}
+            >
+              {t('cta.button')}
+              <ArrowRight size={20} />
             </button>
-            <button onClick={() => navigate(getDashboardRoute())} className="btn-cta-secondary">
-              {t('nav.dashboard')}
+            <button 
+              className="btn-cta-secondary-centered"
+              onClick={() => navigate('/verify')}
+            >
+              <Search size={20} />
+              {t('nav.verifyCertificate')}
             </button>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="footer">
-        <div className="footer-container">
-          <div className="footer-brand">
-            <div className="footer-logo">
-              <Shield size={24} />
+      <footer className="footer-centered">
+        <div className="footer-container-centered">
+          <div className="footer-brand-centered">
+            <div className="footer-logo-centered">
+              <Shield size={28} />
               <span>Certify</span>
             </div>
             <p>{t('footer.description')}</p>
           </div>
-          <div className="footer-links">
-            <div className="footer-column">
-              <h4>{t('footer.product')}</h4>
-              <a href="#features">{t('footer.features')}</a>
-              <a href="#how-it-works">{t('nav.howItWorks')}</a>
-              <a href="/dashboard">{t('nav.dashboard')}</a>
-            </div>
-            <div className="footer-column">
-              <h4>{t('footer.legal')}</h4>
-              <a href="https://www.digilocker.gov.in/web/signup" target="_blank" rel="noopener noreferrer">{t('nav.digiLocker')}</a>
-            </div>
+
+          <div className="footer-column-centered">
+            <h4>{t('footer.product')}</h4>
+            <a href="#features">{t('nav.features')}</a>
+            <a href="#how-it-works">{t('nav.howItWorks')}</a>
+            <a href="#benefits">{t('nav.benefits')}</a>
+            <a href="/verify">{t('nav.verifyCertificate')}</a>
+          </div>
+
+          <div className="footer-column-centered">
+            <h4>{t('footer.company')}</h4>
+            <a href="/about">{t('footer.about')}</a>
+            <a href="/contact">{t('footer.contact')}</a>
+            <a href="/careers">{t('footer.careers')}</a>
+            <a href="/blog">{t('footer.blog')}</a>
+          </div>
+
+          <div className="footer-column-centered">
+            <h4>{t('footer.legal')}</h4>
+            <a href="/privacy">{t('footer.privacy')}</a>
+            <a href="/terms">{t('footer.terms')}</a>
+            <a href="/security">{t('footer.security') || 'Security'}</a>
           </div>
         </div>
-        <div className="footer-bottom">
+
+        <div className="footer-bottom-centered">
           <p>&copy; 2025 Certify. {t('footer.allRightsReserved')}</p>
         </div>
       </footer>

@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Shield, ArrowLeft, Award, Search, Calendar, Building2 } from 'lucide-react';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import axios from 'axios';
 import '../styles/Dashboard.css';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -40,13 +43,14 @@ const Dashboard = () => {
             <span className="logo-text">Certify</span>
           </div>
           <div className="nav-actions">
+            <LanguageSwitcher />
             <button onClick={() => navigate('/issue')} className="btn-primary">
               <Award size={18} />
-              Issue Certificate
+              {t('nav.issueCertificate')}
             </button>
             <button onClick={() => navigate('/')} className="btn-back">
               <ArrowLeft size={20} />
-              Home
+              {t('common.back')}
             </button>
           </div>
         </div>
@@ -54,8 +58,8 @@ const Dashboard = () => {
 
       <div className="dashboard-container">
         <div className="dashboard-header">
-          <h1>Certificate Dashboard</h1>
-          <p>Manage and view all issued certificates</p>
+          <h1>{t('dashboard.certificatesDashboard') || 'Certificate Dashboard'}</h1>
+          <p>{t('dashboard.manageCertificates') || 'Manage and view all issued certificates'}</p>
         </div>
 
         <div className="stats-grid">
@@ -65,7 +69,7 @@ const Dashboard = () => {
             </div>
             <div className="stat-content">
               <span className="stat-number">{certificates.length}</span>
-              <span className="stat-label">Total Certificates</span>
+              <span className="stat-label">{t('dashboard.totalCertificates')}</span>
             </div>
           </div>
           <div className="stat-card">
@@ -74,7 +78,7 @@ const Dashboard = () => {
             </div>
             <div className="stat-content">
               <span className="stat-number">100%</span>
-              <span className="stat-label">Verified</span>
+              <span className="stat-label">{t('dashboard.verified')}</span>
             </div>
           </div>
           <div className="stat-card">
@@ -83,7 +87,7 @@ const Dashboard = () => {
             </div>
             <div className="stat-content">
               <span className="stat-number">{new Set(certificates.map(c => c.instituteName)).size}</span>
-              <span className="stat-label">Institutes</span>
+              <span className="stat-label">{t('dashboard.totalInstitutes')}</span>
             </div>
           </div>
         </div>
@@ -93,7 +97,7 @@ const Dashboard = () => {
             <Search className="search-icon" size={20} />
             <input
               type="text"
-              placeholder="Search by learner, course, or institute..."
+              placeholder={t('dashboard.searchPlaceholder') || 'Search by learner, course, or institute...'}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -103,20 +107,20 @@ const Dashboard = () => {
         {loading ? (
           <div className="loading-state">
             <div className="loader"></div>
-            <p>Loading certificates...</p>
+            <p>{t('common.loading')}</p>
           </div>
         ) : filteredCertificates.length === 0 ? (
           <div className="empty-state">
             <Award size={64} />
-            <h3>No Certificates Found</h3>
+            <h3>{t('dashboard.noCertificates')}</h3>
             <p>
               {searchTerm 
-                ? 'Try adjusting your search terms'
-                : 'Start by issuing your first certificate'}
+                ? t('dashboard.adjustSearch') || 'Try adjusting your search terms'
+                : t('dashboard.startIssuing') || 'Start by issuing your first certificate'}
             </p>
             {!searchTerm && (
               <button onClick={() => navigate('/issue')} className="btn-issue">
-                Issue Certificate
+                {t('nav.issueCertificate')}
               </button>
             )}
           </div>
@@ -125,11 +129,11 @@ const Dashboard = () => {
             <table>
               <thead>
                 <tr>
-                  <th>Learner Name</th>
-                  <th>Course</th>
-                  <th>Institute</th>
-                  <th>Issue Date</th>
-                  <th>Actions</th>
+                  <th>{t('dashboard.learnerName')}</th>
+                  <th>{t('dashboard.courseName')}</th>
+                  <th>{t('dashboard.instituteName')}</th>
+                  <th>{t('dashboard.issuedDate')}</th>
+                  <th>{t('dashboard.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -157,7 +161,7 @@ const Dashboard = () => {
                         onClick={() => navigate(`/certificate/${cert.id}`)}
                         className="btn-view-cert"
                       >
-                        View
+                        {t('dashboard.view')}
                       </button>
                     </td>
                   </tr>

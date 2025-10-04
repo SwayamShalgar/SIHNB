@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Shield, LogOut, Search, Award, Eye, Users, Building, CheckCircle, UserCircle, BookOpen, Download, Filter, Briefcase } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import axios from 'axios';
 import CompanyJobManagement from '../components/CompanyJobManagement';
 import '../styles/CompanyDashboard.css';
 
 const CompanyDashboard = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user, isAuthenticated, logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [verificationResult, setVerificationResult] = useState(null);
@@ -109,14 +112,15 @@ const CompanyDashboard = () => {
             <span className="logo-text">Certify Company</span>
           </div>
           <div className="nav-actions">
+            <LanguageSwitcher />
             <span className="user-info">{user.organization || user.email}</span>
             <button onClick={() => navigate('/profile')} className="btn-profile">
               <UserCircle size={20} />
-              Profile
+              {t('nav.profile')}
             </button>
             <button onClick={handleLogout} className="btn-logout">
               <LogOut size={20} />
-              Logout
+              {t('nav.logout')}
             </button>
           </div>
         </div>
